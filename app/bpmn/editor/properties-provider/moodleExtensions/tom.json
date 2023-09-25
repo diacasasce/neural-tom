@@ -1,0 +1,89 @@
+{
+	"name": "NEURAL DYNAMICS TOM",
+	"uri": "http://some.tom.uri",
+	"prefix": "tom",
+	"xml": {
+		"tagAlias": "lowerCase"
+	},
+	"types": [
+		{
+			"name": "TestCases",
+			"superClass": ["Element"],
+			"properties": [
+				{
+					"name": "testCases",
+					"isMany": true,
+					"isAttr": false,
+					"type": "TestCase"
+				}
+			]
+		},
+		{
+			"name": "TestCase",
+			"properties": [
+				{
+					"name": "id",
+					"isAttr": true,
+					"type": "String"
+				},
+				{
+					"name": "name",
+					"isAttr": true,
+					"type": "String"
+				},
+				{
+					"name": "tc_description",
+					"isAttr": false,
+					"type": "String"
+				},
+				{
+					"name": "tc_input",
+					"isAttr": false,
+					"type": "String"
+				},
+				{
+					"name": "tc_output",
+					"isAttr": false,
+					"type": "String"
+				}
+			]
+		},
+		{
+			"name": "Next_Tasks",
+			"superClass": ["Element"],
+			"properties": [
+				{
+					"name": "rules",
+					"isMany": true,
+					"isAttr": false,
+					"type": "Rule"
+				}
+			]
+		},
+		{
+			"name": "Rule",
+			"properties": [
+				{
+					"name": "id",
+					"isAttr": true,
+					"type": "String"
+				},
+				{
+					"name": "name",
+					"isAttr": true,
+					"type": "String"
+				},
+				{
+					"name": "description",
+					"isAttr": false,
+					"type": "String"
+				},
+				{
+					"name": "next",
+					"isAttr": false,
+					"type": "String"
+				}
+			]
+		}
+	]
+}

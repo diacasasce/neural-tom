@@ -1,0 +1,65 @@
+<process id="Process_1" isExecutable="false">
+  <lane id="Lane_1gjyb69" name="lane 1" canCreate="true" canRead="true" canUpdate="true" canDelete="true">
+    <roles>
+      <role name="lane 1" canCreate="true" canRead="true" canUpdate="true" canDelete="true"></role>
+    </roles>
+    <start id="Event_0oh94cx"></start>
+    <task id="Activity_08pn1l5" name="t1" type="F">
+      <task_description>
+                descr
+      </task_description>
+      <task_front>
+                front
+      </task_front>
+      <task_input>
+                input
+      </task_input>
+      <task_output>
+                output
+      </task_output>
+      <testCases id="tests_0v4shsl">
+        <testCase id="case_08arbtn" name="sd">
+          <tc_description>
+                        sdf
+          </tc_description>
+          <tc_input>
+                        dfs
+          </tc_input>
+          <tc_output>
+                        sdf
+          </tc_output>
+        </testCase>
+      </testCases>
+      <next_Tasks id="nt_1vps104">
+        <rule id="rule_180dyyv" name="sdf" nextId="">
+          <description>
+                            fsd
+          </description>
+          <next>
+                            sdf
+          </next>
+        </rule>
+      </next_Tasks>
+    </task>
+  </lane>
+  <lane id="Lane_09z6jc5" name="lane 2">
+    <roles>
+      <role name="lane 2"></role>
+    </roles>
+    <task id="Activity_0yuywi0" name="nl2" type="F">
+      <task_description>
+                descr
+      </task_description>
+      <task_front>
+                front
+      </task_front>
+      <task_input>
+                input
+      </task_input>
+      <task_output>
+                output
+      </task_output>
+    </task>
+    <end id="Event_01e48y1"></end>
+  </lane>
+</process>

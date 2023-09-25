@@ -1,0 +1,52 @@
+<process>
+	<lane id="1">
+		<roles>
+			<role name="Role A" canCreate="true" canRead="true" canUpdate="true" canDelete="true" />
+		</roles>
+		<start id="Start" name="Start" next="task_1" />
+		<task id="task-1" name="task-1" type="F" previus="Start">
+			<task_description>This lambda function receives an event with a base64 CSV file and the name of the file. The lambda function should rebuild the file again and upload this file in CSV format to an S3 bucket named task-1-bucket-tom.</task_description>
+			<task_front>This view must include a grid that allows to display in one column the name of the uploaded file and in another column the timestamp in which the file was uploaded once the upload button is clicked. The filename must be taken from the file being uploaded, the timestamp must be taken from the browser. The file must be converted to its base64 representation and must be sent to the endpoint also with the file name according to the data structure defined in the lambda function.</task_front>
+			<task_testcases>
+				<testcase>
+					<tc_description></tc_description>
+					<tc_input></tc_input>
+					<tc_output></tc_output>
+				</testcase>
+			</task_testcases>
+			<task_input>The input to this lambda function is an event whose body contains the base 64 representation of a CSV file and the file name.</task_input>
+			<task_output>The output of this lambda function is a message that is sent to an SQS queue where the message contains only the name of the file that you uploaded to the S3 bucket.</task_output>
+			<next_task id="condition_1" name="condition_1">
+				<rule id="rule_1" name="rule_1">
+					<description></description>
+					<next>task-2</next>
+				</rule>
+			</next_task>
+		</task>
+	</lane>
+	<lane id="2">
+		<roles>
+			<role name="Role B" canCreate="false" canRead="true" canUpdate="false" canDelete="false" />
+		</roles>
+		<task id="task-2" name="task-2" type="F" previus="task-1">
+			<task_description>This lambda function receives an event with the key search and value true. The lambda function look for the file name in the S3 bucket and return the base64 representation of the file.</task_description>
+			<task_front>This view must include a grid that allows to display in one column the name of the   file and in another column the timestamp in which the file was uploaded once the upload button is clicked. The filename must be taken from the file being uploaded, the timestamp must be taken from the browser. The file must be converted to its base64 representation and must be sent to the endpoint also with the file name according to the data structure defined in the lambda function.</task_front>
+			<task_testcases>
+				<testcase>
+					<tc_description></tc_description>
+					<tc_input></tc_input>
+					<tc_output></tc_output>
+				</testcase>
+			</task_testcases>
+			<task_input>The input to this lambda function is an event whose body contains the base 64 representation of a CSV file and the file name.</task_input>
+			<task_output>The output of this lambda function is a message that is sent to an SQS queue where the message contains only the name of the file that you uploaded to the S3 bucket.</task_output>
+			<next_task id="condition_1" name="condition 1">
+				<rule id="rule_1" name="rule_1">
+					<description></description>
+					<next>End</next>
+				</rule>
+			</next_task>
+		</task>
+		<end id="End" name="End" previus="task_2" />
+	</lane>
+</process>

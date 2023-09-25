@@ -1,0 +1,43 @@
+const projects = [
+	{
+		name: 'prototype 1',
+		backend: 'http://localhost:8000',
+		frontend: 'http://localhost:8080',
+		bpmnFile: 'http://localhost:8080/bpmn',
+		thumbnail: 'https://api.dicebear.com/7.x/rings/svg?seed=PR1',
+		repository: 'https://github.com/diacasasce/bpmn-react-implementation',
+		state: 'deployed',
+		description: 'This is a description',
+	},
+	{
+		name: 'prototype 2',
+		backend: 'http://localhost:3000',
+		frontend: 'http://localhost:8080',
+		bpmnFile: 'http://localhost:8080/bpmn',
+		thumbnail: 'https://api.dicebear.com/7.x/rings/svg?seed=PR2',
+		repository: 'https://github.com/diacasasce/bpmn-react-implementation',
+		state: 'on development',
+		description: 'This is a description',
+	},
+	{
+		name: 'prototype 3',
+		backend: 'http://localhost:3000',
+		frontend: 'http://localhost:8080',
+		bpmnFile: 'http://localhost:8080/bpmn',
+		thumbnail: 'https://api.dicebear.com/7.x/rings/svg?seed=PR3',
+		repository: '',
+		state: 'on development',
+		description: 'This is a description',
+	},
+	{
+		name: 'prototype 4',
+		backend: 'http://localhost:3000',
+		frontend: 'http://localhost:8080',
+		bpmnFile: 'http://localhost:8080/bpmn',
+		thumbnail: 'https://api.dicebear.com/7.x/rings/svg?seed=PR4',
+		repository: '',
+		state: 'on development',
+		description: 'This is a description',
+	},
+]
+export default projects

@@ -1,0 +1,147 @@
+* {
+	box-sizing: border-box;
+}
+
+body,
+html {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+a:link {
+	text-decoration: none;
+}
+
+.content,
+.content > div {
+	overflow: auto;
+}
+
+.content > .message {
+	text-align: center;
+	display: table;
+
+	font-size: 16px;
+	color: #111;
+}
+
+.content > .message .note {
+	vertical-align: middle;
+	text-align: center;
+	display: table-cell;
+}
+
+.content .error .details {
+	max-width: 500px;
+	font-size: 12px;
+	margin: 20px auto;
+	text-align: left;
+}
+
+.content .error pre {
+	border: solid 1px #ccc;
+	background: #eee;
+	padding: 10px;
+}
+
+.content:not(.with-error) .error,
+.content.with-error .intro,
+.content.with-diagram .intro {
+	display: none;
+}
+
+.content {
+	width: 100%;
+	height: 100%;
+	padding-top: 4rem;
+	z-index: 0;
+}
+
+.content .canvas {
+	width: 100%;
+	height: 100%;
+}
+
+.content.with-error .canvas {
+	visibility: hidden;
+}
+
+.content.with-diagram .canvas {
+	visibility: visible;
+}
+
+.buttons {
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+.buttons > li {
+	display: inline-block;
+	margin-right: 10px;
+}
+.buttons > li > a {
+	background: #ddd;
+	border: solid 1px #666;
+	display: inline-block;
+	padding: 5px;
+}
+
+.buttons a {
+	opacity: 0.3;
+}
+
+.buttons a.active {
+	opacity: 1;
+}
+
+.content .property_panel {
+	position: absolute;
+	top: 4rem;
+	right: 0;
+	width: 40%;
+	height: 100%;
+	border: solid 1px #ccc;
+	background: #eee;
+	z-index: 0;
+}
+
+.content .property_panel.inactive {
+	display: none;
+}
+
+.save_button {
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	background: #ddd;
+	border: solid 1px #666;
+	display: inline-block;
+	padding: 5px;
+}
+
+/* 
+  add new icon as svg url
+*/
+.tom-cloud-deploy {
+	background-image: url('data:image/svg+xml,%3C%3Fxml version="1.0" encoding="utf-8"%3F%3E%3Csvg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M12 9.5V15.5M12 9.5L10 11.5M12 9.5L14 11.5M8.4 19C5.41766 19 3 16.6044 3 13.6493C3 11.2001 4.8 8.9375 7.5 8.5C8.34694 6.48637 10.3514 5 12.6893 5C15.684 5 18.1317 7.32251 18.3 10.25C19.8893 10.9449 21 12.6503 21 14.4969C21 16.9839 18.9853 19 16.5 19L8.4 19Z" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/svg%3E');
+	background-repeat: round;
+	background-position: center;
+}
+.tom-cloud-deploy:hover {
+	background-image: url('data:image/svg+xml,%3Csvg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="%23639efd"%3E%3Cg id="SVGRepo_bgCarrier" stroke-width="0"/%3E%3Cg id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="%23CCCCCC" stroke-width="0.048"/%3E%3Cg id="SVGRepo_iconCarrier"%3E%3Cpath d="M12 9.5V15.5M12 9.5L10 11.5M12 9.5L14 11.5M8.4 19C5.41766 19 3 16.6044 3 13.6493C3 11.2001 4.8 8.9375 7.5 8.5C8.34694 6.48637 10.3514 5 12.6893 5C15.684 5 18.1317 7.32251 18.3 10.25C19.8893 10.9449 21 12.6503 21 14.4969C21 16.9839 18.9853 19 16.5 19L8.4 19Z" stroke="%23578fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/%3E%3C/g%3E%3C/svg%3E');
+	background-repeat: round;
+	background-position: center;
+}
+/*
+.bjs-powered-by {
+  content: ;
+}
+*/
