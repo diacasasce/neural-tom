@@ -4,7 +4,8 @@ const projects = [
 		backend: 'http://localhost:8000',
 		frontend: 'http://localhost:8080',
 		bpmnFile: 'http://localhost:8080/bpmn',
-		thumbnail: 'https://api.dicebear.com/7.x/rings/svg?seed=PR1',
+		thumbnail:
+			'https://raw.githubusercontent.com/diacasasce/neural-tom/07c1677edb4249620693100159e8cc54468dff90/app/mock/diagram1.svg',
 		repository: 'https://github.com/diacasasce/bpmn-react-implementation',
 		state: 'deployed',
 		description: 'This is a description',
@@ -14,7 +15,8 @@ const projects = [
 		backend: 'http://localhost:3000',
 		frontend: 'http://localhost:8080',
 		bpmnFile: 'http://localhost:8080/bpmn',
-		thumbnail: 'https://api.dicebear.com/7.x/rings/svg?seed=PR2',
+		thumbnail:
+			'https://raw.githubusercontent.com/diacasasce/neural-tom/07c1677edb4249620693100159e8cc54468dff90/app/mock/diagram2.svg',
 		repository: 'https://github.com/diacasasce/bpmn-react-implementation',
 		state: 'on development',
 		description: 'This is a description',
@@ -24,7 +26,8 @@ const projects = [
 		backend: 'http://localhost:3000',
 		frontend: 'http://localhost:8080',
 		bpmnFile: 'http://localhost:8080/bpmn',
-		thumbnail: 'https://api.dicebear.com/7.x/rings/svg?seed=PR3',
+		thumbnail:
+			'https://raw.githubusercontent.com/diacasasce/neural-tom/07c1677edb4249620693100159e8cc54468dff90/app/mock/diagram3.svg',
 		repository: '',
 		state: 'on development',
 		description: 'This is a description',
@@ -34,7 +37,8 @@ const projects = [
 		backend: 'http://localhost:3000',
 		frontend: 'http://localhost:8080',
 		bpmnFile: 'http://localhost:8080/bpmn',
-		thumbnail: 'https://api.dicebear.com/7.x/rings/svg?seed=PR4',
+		thumbnail:
+			'https://raw.githubusercontent.com/diacasasce/neural-tom/07c1677edb4249620693100159e8cc54468dff90/app/mock/diagram4.svg',
 		repository: '',
 		state: 'on development',
 		description: 'This is a description',
