@@ -1,7 +1,7 @@
 import React from 'react'
 import UserDropdown from './userDropdown'
 import Link from 'next/link'
-import Logo from '@/resources/logo'
+import Logo from '../../resources/logo'
 
 const NavBar = (props) => {
 	return (
