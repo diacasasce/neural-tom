@@ -1,11 +1,15 @@
 import React from 'react'
 import UserDropdown from './userDropdown'
+import Link from 'next/link'
+import Logo from '@/resources/logo'
 
 const NavBar = (props) => {
 	return (
-		<nav className="navbar fixed bg-base-100 z-50">
+		<nav className="navbar fixed bg-primary z-50">
 			<div className="navbar-start">
-				<a className="btn btn-ghost normal-case text-xl">ND</a>
+				<Link href="/dashboard" className="normal-case text-xl">
+					<Logo className="w-12 h-12 fill-white" />
+				</Link>
 			</div>
 			<div className="navbar-end">
 				<UserDropdown />

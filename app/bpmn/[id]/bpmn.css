@@ -72,6 +72,9 @@ a:link {
 .content.with-diagram .canvas {
 	visibility: visible;
 }
+.entry {
+	color: var(--palette-entry-color);
+}
 
 .buttons {
 	position: fixed;
@@ -140,8 +143,6 @@ a:link {
 	background-repeat: round;
 	background-position: center;
 }
-/*
 .bjs-powered-by {
-  content: ;
+	display: none;
 }
-*/

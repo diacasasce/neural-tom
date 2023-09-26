@@ -6,9 +6,12 @@ import {
 	EyeIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { useDispatch } from 'react-redux'
+import { deleteProject } from '../../lib/redux/slices/projectSlice'
 
 const ProjectCard = ({ project }) => {
 	const { id, name, description, thumbnail } = project
+	const dispatch = useDispatch()
 	return (
 		<div className="card bg-base-100 shadow-xl image-full">
 			<div className="flex">
@@ -23,19 +26,19 @@ const ProjectCard = ({ project }) => {
 				/>
 			</div>
 			<div className="card-body">
-				<h3 className="card-title">{name}</h3>
+				<h3 className="card-title ">{name}</h3>
 				<p>{description}</p>
 				<div className="card-actions justify-end">
 					<button className="btn btn-primary btn-xs">
 						<EyeIcon className="w-5 h-5" />
 					</button>
-					<Link className="btn btn-primary btn-xs" href={`/bpmn/editor/${id}`}>
+					<Link className="btn btn-primary btn-xs" href={`/bpmn/${id}/edit`}>
 						<PencilSquareIcon className="w-5 h-5" />
 					</Link>
 					<button
 						className="btn btn-primary btn-xs"
 						onClick={() => {
-							console.log('delete')
+							dispatch(deleteProject(id))
 						}}
 					>
 						<TrashIcon className="w-5 h-5" />

@@ -1,11 +1,13 @@
 'use client'
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useRouter } from 'next/navigation'
 import { addProject } from '../../lib/redux/slices/projectSlice'
 import slugify from 'slugify'
 
 const CreateModal = ({ isOpen, onClose }) => {
 	const dispatch = useDispatch()
+	const router = useRouter()
 	const [projectName, setProjectName] = useState('')
 	const [projectDescription, setProjectDescription] = useState('')
 	const [projectRepository, setProjectRepository] = useState('')
@@ -17,23 +19,24 @@ const CreateModal = ({ isOpen, onClose }) => {
 			repository: projectRepository,
 			status: 'in-progress',
 		}
-		console.log({ project })
 		dispatch(addProject(project))
 	}
 	return (
 		<dialog
-			id="my_modal_2"
+			id="modal"
 			className="modal"
 			open={isOpen}
 			onClose={() => {
 				onClose()
 			}}
 		>
-			<div className="modal-box bg-neutral-focus card">
-				<h1 className="text-2xl">Create Project</h1>
+			<div className="modal-box bg-neutral-focus card overflow-hidden">
+				<h1 className="text-2xl text-primary-content">Create Project</h1>
 				<div className="form-control w-full">
 					<label className="label">
-						<span className="label-text">Project Name</span>
+						<span className="label-text  text-primary-content">
+							Project Name
+						</span>
 					</label>
 					<input
 						type="text"
@@ -45,7 +48,9 @@ const CreateModal = ({ isOpen, onClose }) => {
 						}}
 					/>
 					<label className="label">
-						<span className="label-text">project Description</span>
+						<span className="label-text text-primary-content">
+							project Description
+						</span>
 					</label>
 					<textarea
 						className="textarea textarea-bordered h-24 textarea-sm w-full"
@@ -56,7 +61,9 @@ const CreateModal = ({ isOpen, onClose }) => {
 						}}
 					></textarea>
 					<label className="label">
-						<span className="label-text">Project Repository</span>
+						<span className="label-text text-primary-content">
+							Project Repository
+						</span>
 					</label>
 					<input
 						type="text"
@@ -76,6 +83,7 @@ const CreateModal = ({ isOpen, onClose }) => {
 								event.preventDefault()
 								console.log('create', { event })
 								createProject()
+								router.push(`/bpmn/${slugify(projectName)}/edit`)
 							}}
 						>
 							Create
