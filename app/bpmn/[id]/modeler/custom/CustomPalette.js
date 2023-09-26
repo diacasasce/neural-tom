@@ -164,10 +164,6 @@ PaletteProvider.prototype.getPaletteEntries = function () {
 			action: {
 				click: async function () {
 					//export to xml
-					await moddler.saveSVG().then(({ svg }) => {
-						console.log(svg)
-						download(svg, 'diagram.svg', 'image/svg+xml')
-					})
 					const { tom } = await moddler
 						.saveXML({ format: true })
 						.then(({ xml }) => {

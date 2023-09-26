@@ -10,7 +10,7 @@ import '@bpmn-io/properties-panel/assets/properties-panel.css'
 import { useEffect, useRef, useState } from 'react'
 import TomModeler from '../modeler'
 import gridModule from 'diagram-js-grid'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateProject } from '../../../lib/redux/slices/projectSlice'
 
 import diagramXML from '../resources/newDiagram.js' // use raw to load as String in VITE
@@ -31,12 +31,17 @@ const BpmnEditorPage = ({ params }) => {
 	const [SVG, setSVG] = useState(null)
 	const [diagram, setDiagram] = useState(null)
 	const dispatch = useDispatch()
+	//const router = useRouter()
+	const project = useSelector((state) => state.projects.projects).find(
+		(project) => project.id === params.id
+	)
 
 	useEffect(() => {
 		if (!window) return
 		if (!container.current) return
 		if (!canvas.current) return
 		if (!properties.current) return
+		if (!project) return
 
 		bpmnInstance.current = new TomModeler({
 			container: canvas.current,
@@ -58,10 +63,6 @@ const BpmnEditorPage = ({ params }) => {
 			},
 		})
 
-		async function createNewDiagram() {
-			openDiagram(diagramXML)
-		}
-
 		async function openDiagram(xml) {
 			if (!window) return
 			if (!container.current) return
@@ -82,8 +83,13 @@ const BpmnEditorPage = ({ params }) => {
 				}
 			}
 		}
-
-		createNewDiagram()
+		if (project?.bpmnFile) {
+			console.log('opening project.bpmnFile')
+			openDiagram(project.bpmnFile)
+		} else {
+			console.log('opening newDiagram')
+			openDiagram(diagramXML)
+		}
 
 		return () => bpmnInstance.current?.destroy()
 	}, [])
@@ -92,19 +98,15 @@ const BpmnEditorPage = ({ params }) => {
 	useEffect(() => {
 		if (!bpmnInstance.current) return
 		const autoSave = async () => {
-			console.log('auto saving')
 			const { xml } = await bpmnInstance.current.saveXML({ format: true })
-			const svg = await bpmnInstance.current.saveSVG()
-			setSVG(svg)
-			setDiagram(xml)
+			const { svg } = await bpmnInstance.current.saveSVG()
 			dispatch(
 				updateProject({
 					id: params.id,
-					tumbnail: svg64(svg),
+					thumbnail: svg64(svg),
 					bpmnFile: xml,
 				})
 			)
-			console.log('auto saved')
 		}
 		if (window) {
 			window.addEventListener('click', autoSave)

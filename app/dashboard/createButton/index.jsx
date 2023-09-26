@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import CreateModal from '../createModal'
 
-const CreateButton = () => {
+const CreateButton = (props) => {
 	const [openModal, setOpenModal] = useState(false)
 	const closeModalHandler = () => {
 		setOpenModal(false)
@@ -10,10 +10,9 @@ const CreateButton = () => {
 	const openModalHandler = () => {
 		setOpenModal(true)
 	}
-	console.log('CreateButton')
 	return (
 		<>
-			<div>
+			<div {...props}>
 				<button
 					className="btn btn-primary btn-sm"
 					onClick={() => {

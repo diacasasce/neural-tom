@@ -8,7 +8,6 @@ import {
 import Link from 'next/link'
 import { useDispatch } from 'react-redux'
 import { deleteProject } from '../../lib/redux/slices/projectSlice'
-
 const ProjectCard = ({ project }) => {
 	const { id, name, description, thumbnail } = project
 	const dispatch = useDispatch()
