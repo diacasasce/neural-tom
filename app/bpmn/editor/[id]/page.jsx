@@ -19,7 +19,8 @@ import laneProviderModule from './properties-provider/lane-properties-provider'
 import eventHandlerModules from './eventHandlers'
 import tomExtension from './properties-provider/moodleExtensions/tom.json'
 
-const BpmnEditorPage = (props) => {
+const BpmnEditorPage = ({ params }) => {
+	console.log(params)
 	const container = useRef()
 	const canvas = useRef()
 	const properties = useRef()

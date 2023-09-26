@@ -1,19 +1,30 @@
 'use client'
+import React, { useState } from 'react'
+import CreateModal from '../createModal'
 
-import React from 'react'
+const CreateButton = () => {
+	const [openModal, setOpenModal] = useState(false)
+	const closeModalHandler = () => {
+		setOpenModal(false)
+	}
+	const openModalHandler = () => {
+		setOpenModal(true)
+	}
 
-const CreateButton = (props) => {
 	return (
-		<div>
-			<button
-				className="btn btn-primary"
-				onClick={() => {
-					console.log('create')
-				}}
-			>
-				Create
-			</button>
-		</div>
+		<>
+			<div>
+				<button
+					className="btn btn-primary"
+					onClick={() => {
+						openModalHandler()
+					}}
+				>
+					Create
+				</button>
+			</div>
+			<CreateModal isOpen={openModal} onClose={closeModalHandler} />
+		</>
 	)
 }
 
