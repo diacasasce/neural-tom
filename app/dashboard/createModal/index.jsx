@@ -17,7 +17,7 @@ const CreateModal = ({ isOpen, onClose }) => {
 			name: projectName,
 			description: projectDescription,
 			repository: projectRepository,
-			status: 'in-progress',
+			status: 'draft',
 		}
 		dispatch(addProject(project))
 	}

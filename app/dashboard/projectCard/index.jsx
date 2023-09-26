@@ -5,12 +5,14 @@ import {
 	TrashIcon,
 	EyeIcon,
 } from '@heroicons/react/24/outline'
-import Link from 'next/link'
 import { useDispatch } from 'react-redux'
+import { useRouter } from 'next/navigation'
 import { deleteProject } from '../../lib/redux/slices/projectSlice'
+import { isDraft } from '@reduxjs/toolkit'
 const ProjectCard = ({ project }) => {
-	const { id, name, description, thumbnail } = project
+	const { id, name, description, thumbnail, status } = project
 	const dispatch = useDispatch()
+	const router = useRouter()
 	return (
 		<div className="card bg-base-100 shadow-xl image-full">
 			<div className="flex">
@@ -31,9 +33,15 @@ const ProjectCard = ({ project }) => {
 					<button className="btn btn-primary btn-xs">
 						<EyeIcon className="w-5 h-5" />
 					</button>
-					<Link className="btn btn-primary btn-xs" href={`/bpmn/${id}/edit`}>
+					<button
+						className="btn btn-primary btn-xs"
+						disabled={status !== 'draft'}
+						onClick={() => {
+							router.push(`/bpmn/${id}/edit`)
+						}}
+					>
 						<PencilSquareIcon className="w-5 h-5" />
-					</Link>
+					</button>
 					<button
 						className="btn btn-primary btn-xs"
 						onClick={() => {
