@@ -8,7 +8,7 @@ const projects = [
 		thumbnail:
 			'https://raw.githubusercontent.com/diacasasce/neural-tom/07c1677edb4249620693100159e8cc54468dff90/app/mock/diagram1.svg',
 		repository: 'https://github.com/diacasasce/bpmn-react-implementation',
-		state: 'deployed',
+		status: 'deployed',
 		description: 'This is a description',
 	},
 	{
@@ -20,7 +20,7 @@ const projects = [
 		thumbnail:
 			'https://raw.githubusercontent.com/diacasasce/neural-tom/07c1677edb4249620693100159e8cc54468dff90/app/mock/diagram2.svg',
 		repository: 'https://github.com/diacasasce/bpmn-react-implementation',
-		state: 'deployed',
+		status: 'deployed',
 		description: 'This is a description',
 	},
 	{
@@ -32,7 +32,7 @@ const projects = [
 		thumbnail:
 			'https://raw.githubusercontent.com/diacasasce/neural-tom/07c1677edb4249620693100159e8cc54468dff90/app/mock/diagram3.svg',
 		repository: '',
-		state: 'deployed',
+		status: 'deployed',
 		description: 'This is a description',
 	},
 	{
@@ -44,7 +44,7 @@ const projects = [
 		thumbnail:
 			'https://raw.githubusercontent.com/diacasasce/neural-tom/07c1677edb4249620693100159e8cc54468dff90/app/mock/diagram4.svg',
 		repository: '',
-		state: 'deployed',
+		status: 'deployed',
 		description: 'This is a description',
 	},
 ]
