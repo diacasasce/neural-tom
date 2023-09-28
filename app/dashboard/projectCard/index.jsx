@@ -5,14 +5,13 @@ import {
 	TrashIcon,
 	EyeIcon,
 } from '@heroicons/react/24/outline'
-import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/navigation'
-import { deleteProject } from '../../lib/redux/slices/projectSlice'
-import { isDraft } from '@reduxjs/toolkit'
+import { useDeleteProjectMutation } from '../../lib/redux/slices/projectSlice'
+
 const ProjectCard = ({ project }) => {
 	const { id, name, description, thumbnail, status } = project
-	const dispatch = useDispatch()
 	const router = useRouter()
+	const [deleteProjectMutation] = useDeleteProjectMutation()
 	return (
 		<div className="card bg-base-100 shadow-xl image-full">
 			<div className="flex">
@@ -44,8 +43,8 @@ const ProjectCard = ({ project }) => {
 					</button>
 					<button
 						className="btn btn-primary btn-xs"
-						onClick={() => {
-							dispatch(deleteProject(id))
+						onClick={async () => {
+							await deleteProjectMutation(id)
 						}}
 					>
 						<TrashIcon className="w-5 h-5" />

@@ -1,11 +1,6 @@
 'use client'
-
-/* Core */
-import { Provider } from 'react-redux'
-
-/* Instruments */
-import { reduxStore } from './redux'
-
+import { ApiProvider } from '@reduxjs/toolkit/dist/query/react'
+import { projectsApi } from './redux/slices/projectSlice'
 export const Providers = ({ children }) => {
-	return <Provider store={reduxStore}>{children}</Provider>
+	return <ApiProvider api={projectsApi}>{children}</ApiProvider>
 }

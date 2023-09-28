@@ -1,25 +1,23 @@
 'use client'
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/navigation'
-import { addProject } from '../../lib/redux/slices/projectSlice'
-import slugify from 'slugify'
+import { useCreateProjectMutation } from '../../lib/redux/slices/projectSlice'
 
 const CreateModal = ({ isOpen, onClose }) => {
-	const dispatch = useDispatch()
 	const router = useRouter()
 	const [projectName, setProjectName] = useState('')
 	const [projectDescription, setProjectDescription] = useState('')
 	const [projectRepository, setProjectRepository] = useState('')
-	const createProject = () => {
+	const [createProject, { data, error, isLoading }] = useCreateProjectMutation()
+	const createNewProject = async () => {
 		const project = {
-			id: slugify(projectName),
 			name: projectName,
 			description: projectDescription,
 			repository: projectRepository,
 			status: 'draft',
 		}
-		dispatch(addProject(project))
+		const newPR = await createProject(project).unwrap()
+		return newPR
 	}
 	return (
 		<dialog
@@ -79,11 +77,11 @@ const CreateModal = ({ isOpen, onClose }) => {
 					<form method="dialog" className="flex gap-2">
 						<button
 							className="btn btn-primary btn-sm"
-							onClick={(event) => {
+							onClick={async (event) => {
 								event.preventDefault()
 								console.log('create', { event })
-								createProject()
-								router.push(`/bpmn/${slugify(projectName)}/edit`)
+								const newProject = await createNewProject()
+								router.push(`/bpmn/${newProject.id}/edit`)
 							}}
 						>
 							Create

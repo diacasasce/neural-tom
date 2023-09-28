@@ -2,11 +2,14 @@
 import React from 'react'
 import ProjectCard from './projectCard'
 import CreateButton from './createButton'
-import { useSelector } from 'react-redux'
+import { useGetProjectsQuery } from '../lib/redux/slices/projectSlice'
+import Loading from '../loading'
 
 const Dashboard = (props) => {
-	const projects = useSelector((state) => state.projects.projects)
-	console.log(projects)
+	const { data: projects, isLoading } = useGetProjectsQuery()
+	if (isLoading) {
+		return <Loading />
+	}
 	return (
 		<main className="pt-14 h-screen w-screen z-0">
 			<div className="pt-2 grid grid-cols-8 bg-neutral gap-0 overflow-x-hidden">

@@ -10,8 +10,7 @@ import '@bpmn-io/properties-panel/assets/properties-panel.css'
 import { useEffect, useRef, useState } from 'react'
 import TomModeler from '../modeler'
 import gridModule from 'diagram-js-grid'
-import { useDispatch, useSelector } from 'react-redux'
-import { updateProject } from '../../../lib/redux/slices/projectSlice'
+import { useGetProjectQuery } from '../../../lib/redux/slices/projectSlice'
 
 import diagramXML from '../resources/newDiagram.js' // use raw to load as String in VITE
 import { BpmnPropertiesPanelModule } from 'bpmn-js-properties-panel'
@@ -27,21 +26,20 @@ const BpmnEditorPage = ({ params }) => {
 	const canvas = useRef()
 	const properties = useRef()
 	const bpmnInstance = useRef()
-	const [isLoading, setIsLoading] = useState(true)
 	const [SVG, setSVG] = useState(null)
 	const [diagram, setDiagram] = useState(null)
-	const dispatch = useDispatch()
 	//const router = useRouter()
-	const project = useSelector((state) => state.projects.projects).find(
-		(project) => project.id === params.id
-	)
+	const { data, isLoading, isError } = useGetProjectQuery(params.id)
+	const project = data || {}
+	console.log({ data, project })
 
 	useEffect(() => {
 		if (!window) return
+		if (isLoading) return
+		if (isError) return
 		if (!container.current) return
 		if (!canvas.current) return
 		if (!properties.current) return
-		if (!project) return
 
 		bpmnInstance.current = new TomModeler({
 			container: canvas.current,
@@ -71,7 +69,6 @@ const BpmnEditorPage = ({ params }) => {
 			if (!bpmnInstance.current) return
 			try {
 				await bpmnInstance.current.importXML(xml)
-				setIsLoading(false)
 				console.log('success!')
 			} catch (err) {
 				if (
@@ -92,7 +89,7 @@ const BpmnEditorPage = ({ params }) => {
 		}
 
 		return () => bpmnInstance.current?.destroy()
-	}, [])
+	}, [isLoading, isError])
 
 	// auto save
 	useEffect(() => {
@@ -100,13 +97,6 @@ const BpmnEditorPage = ({ params }) => {
 		const autoSave = async () => {
 			const { xml } = await bpmnInstance.current.saveXML({ format: true })
 			const { svg } = await bpmnInstance.current.saveSVG()
-			dispatch(
-				updateProject({
-					id: params.id,
-					thumbnail: svg64(svg),
-					bpmnFile: xml,
-				})
-			)
 		}
 		if (window) {
 			window.addEventListener('click', autoSave)

@@ -1,38 +1,54 @@
 'use client'
 
-import { createSlice } from '@reduxjs/toolkit'
-import mockProjects from '../../../../mock/projects'
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
-const initialState = {
-	projects: [...mockProjects],
-}
-
-export const projectSlice = createSlice({
-	name: 'projects',
-	initialState,
-	reducers: {
-		addProject: (state, action) => {
-			state.projects.push(action.payload)
-		},
-		deleteProject: (state, action) => {
-			state.projects = state.projects.filter((project) => {
-				return project.id !== action.payload
-			})
-		},
-		updateProject: (state, action) => {
-			state.projects = state.projects.map((project) => {
-				if (project.id === action.payload.id) {
-					return {
-						...project,
-						...action.payload,
-					}
-				}
-				return project
-			})
-		},
-	},
+export const projectsApi = createApi({
+	reducerPath: 'projectsApi',
+	baseQuery: fetchBaseQuery({
+		baseUrl: '/api',
+	}),
+	tagTypes: ['Projects'],
+	endpoints: (builder) => ({
+		getProjects: builder.query({
+			query: () => '/projects',
+			providesTags: (result) => {
+				const tags = result.map(({ id }) => ({ type: 'Projects', id }))
+				return result ? [...tags, 'Projects'] : ['Projects']
+			},
+		}),
+		getProject: builder.query({
+			query: (id) => `/projects/${id}`,
+			providesTags: (result, error, id) => [{ type: 'Projects', id }],
+		}),
+		createProject: builder.mutation({
+			query: (body) => ({
+				url: '/projects',
+				method: 'POST',
+				body,
+			}),
+			invalidatesTags: ['Projects'],
+		}),
+		updateProject: builder.mutation({
+			query: ({ id, ...body }) => ({
+				url: `/projects/${id}`,
+				method: 'PATCH',
+				body,
+			}),
+			invalidatesTags: (result, error, { id }) => [{ type: 'Projects', id }],
+		}),
+		deleteProject: builder.mutation({
+			query: (id) => ({
+				url: `/projects/${id}`,
+				method: 'DELETE',
+			}),
+			invalidatesTags: (result, error, id) => [{ type: 'Projects', id }],
+		}),
+	}),
 })
 
-export const { addProject, deleteProject, updateProject } = projectSlice.actions
-
-export default projectSlice.reducer
+export const {
+	useGetProjectsQuery,
+	useGetProjectQuery,
+	useCreateProjectMutation,
+	useDeleteProjectMutation,
+} = projectsApi
