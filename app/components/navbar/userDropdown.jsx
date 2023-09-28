@@ -7,7 +7,10 @@ const UserDropdown = (props) => {
 		<div className="dropdown dropdown-end z-40">
 			<label tabIndex={0} className="btn btn-ghost btn-circle avatar">
 				<div className="w-10 rounded-full">
-					<img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mimi" />
+					<img
+						src="https://api.dicebear.com/7.x/adventurer/svg?seed=Mimi"
+						alt="profile-pic"
+					/>
 				</div>
 			</label>
 			<ul
