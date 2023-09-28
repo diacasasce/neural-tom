@@ -9,30 +9,34 @@ import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css'
 import '@bpmn-io/properties-panel/assets/properties-panel.css'
 
 import { useEffect, useRef, useState } from 'react'
+import slugify from 'slugify'
 import TomModeler from '../modeler'
 import gridModule from 'diagram-js-grid'
-import { useGetProjectQuery } from '../../../lib/redux/slices/projectSlice'
+import {
+	useUpdateProjectMutation,
+	useGetProjectBpmnQuery,
+} from '../../../lib/redux/slices/projectSlice'
 
-import diagramXML from '../resources/newDiagram.js' // use raw to load as String in VITE
+import diagramXML from '../resources/newDiagram.js'
 import { BpmnPropertiesPanelModule } from 'bpmn-js-properties-panel'
 
 import taskProviderModule from '../properties-provider/task-properties-provider'
 import laneProviderModule from '../properties-provider/lane-properties-provider'
 import eventHandlerModules from '../eventHandlers'
 import tomExtension from '../properties-provider/moodleExtensions/tom.json'
-import svg64 from 'svg64'
 
 const BpmnEditorPage = ({ params }) => {
 	const container = useRef()
 	const canvas = useRef()
 	const properties = useRef()
 	const bpmnInstance = useRef()
-	const [SVG, setSVG] = useState(null)
-	const [diagram, setDiagram] = useState(null)
 	//const router = useRouter()
-	const { data, isLoading, isError } = useGetProjectQuery(params.id)
+	const { data, isLoading, isError } = useGetProjectBpmnQuery(params.id)
+	const [updateProject] = useUpdateProjectMutation()
 	const project = data || {}
-	console.log({ data, project })
+	const generateName = (prefix) => {
+		return `${slugify(project.name)}.${prefix}`
+	}
 
 	useEffect(() => {
 		if (!window) return
@@ -64,13 +68,12 @@ const BpmnEditorPage = ({ params }) => {
 
 		async function openDiagram(xml) {
 			if (!window) return
-			if (!container.current) return
-			if (!canvas.current) return
-			if (!properties.current) return
-			if (!bpmnInstance.current) return
+			if (!container?.current) return
+			if (!canvas?.current) return
+			if (!properties?.current) return
+			if (!bpmnInstance?.current) return
 			try {
 				await bpmnInstance.current.importXML(xml)
-				console.log('success!')
 			} catch (err) {
 				if (
 					err &&
@@ -82,10 +85,10 @@ const BpmnEditorPage = ({ params }) => {
 			}
 		}
 		if (project?.bpmnFile) {
-			console.log('opening project.bpmnFile')
+			console.log('opening bpmn file')
 			openDiagram(project.bpmnFile)
 		} else {
-			console.log('opening newDiagram')
+			console.log('opening new diagram')
 			openDiagram(diagramXML)
 		}
 
@@ -94,18 +97,44 @@ const BpmnEditorPage = ({ params }) => {
 
 	// auto save
 	useEffect(() => {
-		if (!bpmnInstance.current) return
+		if (!window) return
+		if (isLoading) return
+		if (isError) return
+		if (!container?.current) return
+		if (!canvas?.current) return
+		if (!properties?.current) return
 		const autoSave = async () => {
 			const { xml } = await bpmnInstance.current.saveXML({ format: true })
 			const { svg } = await bpmnInstance.current.saveSVG()
+			const xmlBlob = new Blob([xml], { type: 'text/xml' })
+			const svgBlob = new Blob([svg], { type: 'image/svg+xml' })
+			const bpmnFile = await fetch(`/api/blob/${generateName('bpmn')}`, {
+				method: 'POST',
+				body: xmlBlob,
+			})
+				.then((res) => res.json())
+				.then((res) => res.url)
+				.catch((err) => console.error(err))
+			const thumbnail = await fetch(`/api/blob/${generateName('svg')}`, {
+				method: 'POST',
+				body: svgBlob,
+			})
+				.then((res) => res.json())
+				.then((res) => res.url)
+				.catch((err) => console.error(err))
+			await updateProject({
+				id: project.id,
+				bpmnFile,
+				thumbnail,
+			})
 		}
 		if (window) {
 			window.addEventListener('click', autoSave)
 		}
-		return () => {
+		return async () => {
 			window.removeEventListener('click', autoSave)
 		}
-	}, [])
+	}, [isLoading, isError])
 
 	return (
 		<div className="content pt-15 absolute" ref={container}>
