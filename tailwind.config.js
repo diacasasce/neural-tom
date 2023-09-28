@@ -44,10 +44,18 @@ module.exports = {
 					'--rounded-badge': '1rem',
 					'--animation-btn': '.25s',
 					'--animation-input': '.2s',
-
 					'--btn-text-case': 'uppercase',
 					'--navbar-padding': '0.5rem',
 					'--border-btn': '1px',
+					'.landing-bg': {
+						backgroundColor: '#EDF2FC',
+					},
+					'.w-50vw': {
+						width: '50vw',
+					},
+					'.w-30vw': {
+						width: '30vw',
+					},
 				},
 			},
 		],

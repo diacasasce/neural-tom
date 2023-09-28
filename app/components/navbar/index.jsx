@@ -15,7 +15,7 @@ const NavBar = (props) => {
 	return (
 		<nav
 			className={`navbar fixed z-50 ${
-				isNavBarColorLight(pathname) ? 'bg-base-200' : 'bg-primary'
+				isNavBarColorLight(pathname) ? 'landing-bg' : 'bg-primary'
 			}`}
 		>
 			<div className="navbar-start">

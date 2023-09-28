@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
 	return (
 		<ReduxProviders>
 			<html lang="en">
-				<body className={` bg-neutral`}>
+				<body className={`bg-neutral`}>
 					<NavBar />
 					{children}
 				</body>
