@@ -56,6 +56,21 @@ module.exports = {
 					'.w-30vw': {
 						width: '30vw',
 					},
+					'.handle': {
+						width: '10%',
+						height: '100%',
+						background: 'blue',
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						borderRadius: 0,
+						transform: 'none',
+						border: 'solid 2px red',
+						opacity: 0,
+					},
+					'.min-h-unset': {
+						minHeight: 'unset',
+					},
 				},
 			},
 		],
