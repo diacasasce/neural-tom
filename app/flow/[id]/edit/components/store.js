@@ -1,5 +1,10 @@
 import { create } from 'zustand'
-import { addEdge, applyNodeChanges, applyEdgeChanges } from 'reactflow'
+import {
+	addEdge,
+	applyNodeChanges,
+	applyEdgeChanges,
+	updateEdge,
+} from 'reactflow'
 
 const initialNodes = [
 	{
@@ -33,8 +38,12 @@ const initialEdges = []
 const useStore = create((set, get) => ({
 	nodes: initialNodes,
 	edges: initialEdges,
+	rfInstance: null,
 	isModalOpen: false,
 	modalComponent: <></>,
+	setRfInstance: (instance) => {
+		set({ rfInstance: instance })
+	},
 	addNode: (node) => {
 		set({
 			nodes: [...get().nodes, node],
@@ -53,9 +62,9 @@ const useStore = create((set, get) => ({
 			nodes: applyNodeChanges(changes, get().nodes),
 		})
 	},
-	updateEdge: (edge, newConnection) => {
+	updateEdge: (edge, connection) => {
 		set({
-			edges: updateEdge(edge, newConnection, get().edges),
+			edges: updateEdge(edge, connection, get().edges),
 		})
 	},
 	removeEdge: (edgeId) => {
@@ -68,9 +77,9 @@ const useStore = create((set, get) => ({
 			edges: applyEdgeChanges(changes, get().edges),
 		})
 	},
-	onConnect: (connection) => {
+	addEdge: (edge) => {
 		set({
-			edges: addEdge(connection, get().edges),
+			edges: addEdge(edge, get().edges),
 		})
 	},
 	openModal: (component) => {

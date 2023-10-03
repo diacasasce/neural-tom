@@ -6,7 +6,7 @@ import {
 	ChevronDownIcon,
 	ChevronUpIcon,
 } from '@heroicons/react/24/outline'
-import useZStore from './store'
+import useZStore from '../store'
 import Handles from './handles'
 
 const TaskNode = memo(({ data, selected }) => {
@@ -61,9 +61,9 @@ const TaskModal = ({ data }) => {
 		if (event.target.value === accordion) setAccordion('')
 	}
 	return (
-		<div className="h-full w-2/3 bg-base-100 pt-10 p-5 overflow-scroll join join-vertical">
+		<div className="h-full w-2/3 bg-base-100 pt-10 p-3 overflow-scroll join join-vertical">
 			<div className="join join-vertical">
-				<div class="collapse bg-base-200 collapse-arrow border border-base-300 ">
+				<div className="collapse bg-base-200 collapse-arrow border border-base-300 ">
 					<input
 						type="radio"
 						name="modal"
@@ -73,16 +73,16 @@ const TaskModal = ({ data }) => {
 						onChange={onAccordionChange}
 						onClick={onAccordinoClick}
 					/>
-					<div class="collapse-title min-h-unset text-lg font-medium">
+					<div className="collapse-title min-h-unset text-lg font-medium">
 						Task Properties
 					</div>
-					<div class="collapse-content">
+					<div className="collapse-content">
 						<label className="label">
 							<span className="label-text">Task name</span>
 							<input
 								type="text"
 								placeholder="Task Name"
-								className="input input-bordered input-sm  w-full "
+								className="input input-bordered input-sm  w-full rounded-md "
 								value={name}
 								onChange={(event) => setName(event.target.value)}
 							/>
@@ -90,24 +90,13 @@ const TaskModal = ({ data }) => {
 						<label className="label">
 							<span className="label-text">Task Type</span>
 							<select
-								className="select select-bordered select-sm w-full max-w-xs"
+								className="select select-bordered select-sm w-full max-w-xs  rounded-md"
 								onChange={(event) => setTaskType(event.target.value)}
+								value={taskType}
 							>
-								<option disabled selected={data.taskType ? false : true}>
-									Select a Task Type
-								</option>
-								<option
-									value="B"
-									selected={data.taskType === 'B' ? true : false}
-								>
-									Backend Task
-								</option>
-								<option
-									value="F"
-									selected={data.taskType === 'F' ? true : false}
-								>
-									Frontend Task
-								</option>
+								<option disabled>Select a Task Type</option>
+								<option value="B">Backend Task</option>
+								<option value="F">Frontend Task</option>
 							</select>
 						</label>
 						<label className="label">
@@ -149,67 +138,101 @@ const TaskModal = ({ data }) => {
 						></textarea>
 					</div>
 				</div>
-				<div className="collapse border border-base-300 bg-base-200 ">
+				{/* <div
+					className={`collapse bg-base-200 border border-base-300 ${
+						testCases.length && 'collapse-arrow '
+					}`}
+				>
 					<input
 						type="radio"
 						name="modal"
 						value="test-cases"
-						className="min-h-unset hidden"
+						className="min-h-unset"
+						disabled={!testCases.length}
 						checked={accordion === 'test-cases'}
 						onChange={onAccordionChange}
 						onClick={onAccordinoClick}
 					/>
 					<div className="collapse-title text-lg p-2 pl-4 min-h-unset">
-						<div className="flex justify-between">
-							Test cases
-							<button
-								className="btn btn-square rounded-sm  btn-base-300 btn-xs ml-1 "
-								onClick={() => {
-									accordion === 'test-cases'
-										? setAccordion('')
-										: setAccordion('test-cases')
-								}}
-							>
-								{accordion === 'test-cases' ? (
-									<ChevronUpIcon className="w-6 h-6" />
-								) : (
-									<ChevronDownIcon className="w-6 h-6" />
-								)}
-							</button>
-						</div>
+						<div className="flex justify-between">Test cases</div>
 					</div>
 					<div className="collapse-content">proximamente nextTasks</div>
-				</div>
-				<div className="collapse border border-base-300 bg-base-200 ">
+				</div> */}
+				<div
+					className={`collapse border border-base-300 bg-base-200 ${
+						nextTasks.length && 'collapse-arrow '
+					}`}
+				>
 					<input
 						type="radio"
 						name="modal"
 						value="next-tasks"
-						className="min-h-unset hidden"
+						className="min-h-unset"
 						checked={accordion === 'next-tasks'}
 						onChange={onAccordionChange}
 						onClick={onAccordinoClick}
 					/>
 					<div className="collapse-title text-lg p-2 pl-4 min-h-unset">
-						<div className="flex justify-between">
-							Next Tasks
-							<button
-								className="btn btn-square rounded-sm  btn-base-300 btn-xs ml-1 "
-								onClick={() => {
-									accordion === 'next-tasks'
-										? setAccordion('')
-										: setAccordion('next-tasks')
-								}}
-							>
-								{accordion === 'next-tasks' ? (
-									<ChevronUpIcon className="w-6 h-6" />
-								) : (
-									<ChevronDownIcon className="w-6 h-6" />
-								)}
-							</button>
-						</div>
+						<div className="flex justify-between">Next Tasks</div>
 					</div>
-					<div className="collapse-content">proximamente nextTasks</div>
+					<div className="collapse-content">
+						{!nextTasks.length && (
+							<div className="text-center">
+								create and route tasks to see next task
+							</div>
+						)}
+						{nextTasks.length &&
+							nextTasks.map((nextTask) => {
+								return (
+									<div
+										className={`collapse border border-base-300 bg-base-100 ${
+											nextTasks.length > 1 && 'collapse-arrow '
+										}`}
+										key={`ntDiv-${nextTask.next}`}
+									>
+										<input
+											type="radio"
+											name="taskAcordion"
+											className="min-h-unset"
+											checked="checked"
+										/>
+										<div className="collapse-title min-h-unset ">
+											{nextTask.name}
+										</div>
+										<div className="collapse-content border-t border-base-300 rounded-t-none">
+											<label className="label ">
+												<span className="label-text">Rule Name</span>
+											</label>
+											<input
+												type="text"
+												placeholder="Rule Name"
+												className="input input-bordered input-sm  w-full rounded-md "
+												value={nextTask.name}
+												onChange={(event) => {
+													const nextTasksCopy = [...nextTasks]
+													nextTasksCopy[
+														nextTasks.findIndex(
+															(nt) => nt.next === nextTask.next
+														)
+													].name = event.target.value
+													setNextTasks(nextTasksCopy)
+												}}
+											/>
+											<label className="label">
+												<span className="label-text">Next Task Id</span>
+												<input
+													type="text"
+													placeholder="Next Id"
+													className="input input-bordered input-sm  w-full "
+													disabled
+													value={nextTask.next}
+												/>
+											</label>
+										</div>
+									</div>
+								)
+							})}
+					</div>
 				</div>
 			</div>
 			<div className="modal-action pt-2 ">

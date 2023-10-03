@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { memo, useState } from 'react'
 import { NodeResizer, NodeToolbar } from 'reactflow'
-import useZStore from './store'
+import useZStore from '../store'
 import {
 	ChevronDownIcon,
 	ChevronUpIcon,

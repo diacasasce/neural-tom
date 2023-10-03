@@ -18,7 +18,7 @@ import {
 	ConnectionLineStyle,
 	EdgeOptions,
 } from './components/edges'
-import useStore from './components/nodes/store'
+import useStore from './components/store'
 import StartIcon from './components/icons/start.svg'
 import TaskIcon from './components/icons/task.svg'
 import EndIcon from './components/icons/end.svg'
@@ -44,9 +44,11 @@ const FlowEditorPage = ({ params }) => {
 		modalComponent,
 		nodes,
 		edges,
+		rfInstance,
 		onNodesChange,
 		onEdgesChange,
-		onConnect,
+		addEdge,
+		setRfInstance,
 		addNode,
 		updateNode,
 		updateEdge,
@@ -55,13 +57,55 @@ const FlowEditorPage = ({ params }) => {
 
 	const reactFlowWrapper = useRef(null)
 	const edgeUpdateSuccessful = useRef(true)
-	const [reactFlowInstance, setReactFlowInstance] = useState(null)
+
+	const addNextTask = (source, target) => {
+		const sourceNode = nodes.find((node) => node.id === source)
+		const { data } = sourceNode
+		const { nextTasks } = data
+		const nextTask = {
+			name: `rule ${target}`,
+			next: target,
+		}
+		updateNode({
+			...sourceNode,
+			data: {
+				...data,
+				nextTasks: [...(nextTasks || []), nextTask],
+			},
+		})
+	}
+
+	const removeNextTask = (source, target) => {
+		const sourceNode = nodes.find((node) => node.id === source)
+		const { data } = sourceNode
+		const nextTasks = (data.nextTasks || []).filter(
+			(task) => task.next !== target
+		)
+		updateNode({
+			...sourceNode,
+			data: {
+				...data,
+				nextTasks,
+			},
+		})
+	}
 
 	const onButtonDragStart = (event, nodeType) => {
 		event.dataTransfer.setData('application/reactflow', nodeType)
 		event.dataTransfer.effectAllowed = 'move'
 	}
 
+	const onConnect = (connection) => {
+		const { source, target } = connection
+		console.log({ connection, source, target })
+		addNextTask(source, target)
+		// check if edge alredy exists
+		const edge = edges.find(
+			(edge) => edge.source === source && edge.target === target
+		)
+		if (edge) return
+		addEdge(connection)
+	}
 	const onDrop = useCallback(
 		(event) => {
 			event.preventDefault()
@@ -72,7 +116,7 @@ const FlowEditorPage = ({ params }) => {
 				return
 			}
 
-			const position = reactFlowInstance.project({
+			const position = rfInstance.project({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			})
@@ -80,7 +124,7 @@ const FlowEditorPage = ({ params }) => {
 			console.log({ newNode })
 			addNode(newNode)
 		},
-		[reactFlowInstance]
+		[rfInstance]
 	)
 
 	const onDragOver = useCallback((event) => {
@@ -117,20 +161,34 @@ const FlowEditorPage = ({ params }) => {
 
 	const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
 		edgeUpdateSuccessful.current = true
+		console.log(oldEdge, newConnection)
+		const edge = edges.find(
+			(edge) =>
+				edge.source === newConnection.source &&
+				edge.target === newConnection.target
+		)
+		if (edge) return
+		removeNextTask(oldEdge.source, oldEdge.target)
+		addNextTask(newConnection.source, newConnection.target)
 		updateEdge(oldEdge, newConnection)
 	}, [])
 
 	const onEdgeUpdateEnd = useCallback((_, edge) => {
 		if (!edgeUpdateSuccessful.current) {
+			removeNextTask(edge.source, edge.target)
 			removeEdge(edge.id)
 		}
 
 		edgeUpdateSuccessful.current = true
 	}, [])
 
+	const onNodeDoubleClick = useCallback((event, node) => {
+		console.log({ node })
+	}, [])
+
 	const onPaneClick = (event) => console.log('onPaneClick', event)
 	return (
-		<main className="h-screen">
+		<main className="h-screen bg-primary-content">
 			<div className="drawer drawer-end h-full">
 				<input
 					id="my-drawer-4"
@@ -154,10 +212,11 @@ const FlowEditorPage = ({ params }) => {
 							nodeTypes={nodeTypes}
 							edgeTypes={edgeTypes}
 							onConnect={onConnect}
-							onInit={setReactFlowInstance}
+							onInit={setRfInstance}
 							onDrop={onDrop}
 							onDragOver={onDragOver}
 							onNodeDragStop={onNodeDragStop}
+							onNodeDoubleClick={onNodeDoubleClick}
 							onEdgeUpdate={onEdgeUpdate}
 							onEdgeUpdateStart={onEdgeUpdateStart}
 							onEdgeUpdateEnd={onEdgeUpdateEnd}
