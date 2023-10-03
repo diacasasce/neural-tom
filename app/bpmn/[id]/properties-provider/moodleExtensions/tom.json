@@ -49,7 +49,7 @@
 			]
 		},
 		{
-			"name": "Next_Tasks",
+			"name": "next_task",
 			"superClass": ["Element"],
 			"properties": [
 				{

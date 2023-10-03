@@ -1,5 +1,6 @@
 import { assign } from 'min-dash'
 import download from 'downloadjs'
+import { decode } from 'html-entities'
 
 import XMLExport from '../../utils/XMLexport'
 
@@ -172,19 +173,19 @@ PaletteProvider.prototype.getPaletteEntries = function () {
 								tom: XMLExport(xml),
 							}
 						})
+						.catch((err) => console.log(err))
 					for (const process of tom) {
-						fetch(
-							'https://d6zwxx2ky4.execute-api.us-east-1.amazonaws.com/dev/tomtest',
-							{
-								method: 'POST',
-								headers: {
-									'Content-Type': 'application/xml',
-									Token: 'j123kblk1234ilug1234,',
-								},
-								body: JSON.stringify(process),
-							}
-						)
-							.then((res) => res.json())
+						console.log('trigger')
+						const body = decode(process)
+						console.log(body)
+						fetch('http://35.173.244.177:80/process_xml', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/xml',
+							},
+							body,
+							mode: 'no-cors',
+						})
 							.then((data) => console.log(data))
 							.catch((err) => console.log(err))
 					}

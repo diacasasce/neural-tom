@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@bpmn-io/properties-panel": "^3.4.0",
 		"@heroicons/react": "^2.0.18",
-		"@prisma/client": "^5.2.0",
+		"@prisma/client": "^5.3.1",
 		"@reduxjs/toolkit": "^1.9.6",
 		"@vercel/blob": "^0.13.0",
 		"autoprefixer": "10.4.16",
@@ -22,6 +22,7 @@
 		"diagram-js-grid": "^0.2.0",
 		"downloadjs": "^1.4.7",
 		"eslint-config-next": "13.5.2",
+		"html-entities": "^2.4.0",
 		"inherits": "^2.0.4",
 		"min-dash": "^4.1.1",
 		"next": "13.5.2",
@@ -44,6 +45,6 @@
 		"eslint-plugin-react": "^7.32.2",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-react-refresh": "^0.4.3",
-		"prisma": "^5.2.0"
+		"prisma": "^5.3.1"
 	}
 }

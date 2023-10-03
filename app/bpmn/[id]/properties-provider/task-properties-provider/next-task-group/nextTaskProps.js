@@ -82,7 +82,7 @@ function getNextTasks(businessObject) {
 		: businessObject.get('extensionElements')
 	if (!BO) return null
 	const values = BO.get('values')
-	const nextTasks = values.find((value) => value.$type === 'tom:Next_Tasks')
+	const nextTasks = values.find((value) => value.$type === 'tom:next_task')
 	if (!nextTasks) return null
 	return nextTasks
 }
@@ -113,7 +113,7 @@ function addItem({ injector, element }) {
 		let nextTasks = getNextTasks(extensionElements)
 		if (!nextTasks) {
 			nextTasks = createElement(
-				'tom:Next_Tasks',
+				'tom:next_task',
 				{
 					id: moddle.ids.nextPrefixed('nt_', nextTasks),
 					condition: null,

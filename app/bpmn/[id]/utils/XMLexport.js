@@ -52,6 +52,7 @@ const ExportXML = (xml) => {
 								child.name !== 'bpmn:incoming' && child.name !== 'bpmn:outgoing'
 							)
 						}
+
 						return true
 					})
 					.map((child) => {
@@ -107,19 +108,27 @@ const ExportXML = (xml) => {
 							),
 							children: [
 								roles,
-								...child.children.map((laneChild) => {
-									if (laneChild.name === 'bpmn:flowNodeRef') {
-										const LCElement = elements.find(
-											(element) => element.attributes.id === laneChild.value
+								...child.children
+									.filter((child) => {
+										console.log(child.name, child.name === 'bpmn:childLaneSet')
+										if (child.name === 'bpmn:childLaneSet') {
+											return false
+										}
+										return true
+									})
+									.map((laneChild) => {
+										if (laneChild.name === 'bpmn:flowNodeRef') {
+											const LCElement = elements.find(
+												(element) => element.attributes.id === laneChild.value
+											)
+											LCElement._contained = true
+											return LCElement
+										}
+										return elements.find(
+											(element) =>
+												element.attributes.id === laneChild.attributes.id
 										)
-										LCElement._contained = true
-										return LCElement
-									}
-									return elements.find(
-										(element) =>
-											element.attributes.id === laneChild.attributes.id
-									)
-								}),
+									}),
 							],
 						}
 					}
