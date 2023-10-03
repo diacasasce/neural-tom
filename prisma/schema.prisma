@@ -17,6 +17,7 @@ model Project {
   backendUrl String?
   frontendUrl String?
   bpmnFile String?
+  jsonFile String?
   thumbnail String?
   repository String?
   status String?
