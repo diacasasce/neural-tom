@@ -23,9 +23,23 @@ import StartIcon from './components/icons/start.svg'
 import TaskIcon from './components/icons/task.svg'
 import EndIcon from './components/icons/end.svg'
 import LaneIcon from './components/icons/lane.svg'
+import { CloudArrowUpIcon } from '@heroicons/react/24/outline'
+import {
+	useUpdateProjectMutation,
+	useGetProjectQuery,
+} from '../../../lib/redux/slices/projectSlice'
+
+//import { elementToSVG } from 'dom-to-svg'
 
 const FlowEditorPage = ({ params }) => {
 	const { id } = params
+	const {
+		data: project,
+		isLoading: isGetProjectLoading,
+		isError: isGetProjectError,
+	} = useGetProjectQuery(id)
+
+	const [updateProject] = useUpdateProjectMutation()
 	let nId = 0
 	const getNewNode = (type, position) => {
 		const id = getNodeId()
@@ -37,7 +51,7 @@ const FlowEditorPage = ({ params }) => {
 		}
 	}
 	const getNodeId = () => `node_${++nId}`
-	const { getIntersectingNodes } = useReactFlow()
+	const { getIntersectingNodes, getNodes } = useReactFlow()
 	const {
 		isModalOpen,
 		closeModal,
@@ -88,6 +102,43 @@ const FlowEditorPage = ({ params }) => {
 				nextTasks,
 			},
 		})
+	}
+
+	const save = async (instance, prj) => {
+		const { id } = prj
+		const obj = instance.toObject()
+		const bytes = new TextEncoder().encode(JSON.stringify(obj))
+		const JSONBlob = new Blob([bytes], {
+			type: 'application/json;charset=utf-8',
+		})
+		const jsonFile = await fetch(`/api/blob/${id}.json`, {
+			method: 'POST',
+			body: JSONBlob,
+		})
+			.then((res) => res.json())
+			.then((res) => res.url)
+			.catch((err) => console.error(err))
+		updateProject({
+			id,
+			jsonFile,
+		})
+
+		// const svgDocument = await elementToSVG(
+		// 	document.querySelector('.react-flow__pane')
+		// )
+		// const svgString = new XMLSerializer().serializeToString(svgDocument)
+		// const svgBlob = new Blob([svgString], {
+		// 	type: 'image/svg+xml;charset=utf-8',
+		// })
+		// const SVGFile = await fetch(`/api/blob/${id}.svg`, {
+		// 	method: 'POST',
+		// 	body: svgBlob,
+		// })
+		// 	.then((res) => res.json())
+		// 	.then((res) => res.url)
+		// 	.catch((err) => console.error(err))
+		// console.log(SVGFile)
+		return { jsonFile }
 	}
 
 	const onButtonDragStart = (event, nodeType) => {
@@ -186,7 +237,16 @@ const FlowEditorPage = ({ params }) => {
 		console.log({ node })
 	}, [])
 
-	const onPaneClick = (event) => console.log('onPaneClick', event)
+	const onDeploy = useCallback(async () => {
+		if (rfInstance) {
+			const { jsonFile } = await save(rfInstance, project)
+			console.log({ jsonFile })
+			// order nodes
+			// json to xml
+			// send to server
+		}
+	}, [rfInstance, project])
+
 	return (
 		<main className="h-screen bg-primary-content">
 			<div className="drawer drawer-end h-full">
@@ -220,7 +280,6 @@ const FlowEditorPage = ({ params }) => {
 							onEdgeUpdate={onEdgeUpdate}
 							onEdgeUpdateStart={onEdgeUpdateStart}
 							onEdgeUpdateEnd={onEdgeUpdateEnd}
-							onPaneClick={onPaneClick}
 							onNodesChange={onNodesChange}
 							onEdgesChange={onEdgesChange}
 							connectionLineStyle={ConnectionLineStyle}
@@ -260,6 +319,14 @@ const FlowEditorPage = ({ params }) => {
 									>
 										<LaneIcon />
 									</div>
+								</ControlButton>
+								<ControlButton
+									onClick={() => {
+										console.log('deploying')
+										onDeploy()
+									}}
+								>
+									<CloudArrowUpIcon />
 								</ControlButton>
 							</Controls>
 							<MiniMap className="hidden" />
