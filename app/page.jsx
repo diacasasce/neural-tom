@@ -12,9 +12,11 @@ export default function Home() {
 						<h1 className="text-5xl font-bold">Smart Planning</h1>
 						<h1 className="text-5xl font-bold">Smarter Outcomes</h1>
 						<p className="py-6">
-							Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-							excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-							et a id nisi.
+							TOM automates the entire software development process using
+							natural language procesing. TOM autonomously handles the
+							construction of all stages and components of the DevOps process,
+							simplifying and modernizing your development projects like never
+							before.
 						</p>
 						<Link href="/dashboard" className="btn btn-primary">
 							Get Started
