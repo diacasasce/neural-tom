@@ -30,7 +30,7 @@ const ProjectCard = ({ project }) => {
 				<p>{description}</p>
 				<div className="card-actions justify-end">
 					<button className="btn btn-primary btn-xs">
-						<EyeIcon className="w-5 h-5" />
+						<EyeIcon className="w-5 h-5" disabled />
 					</button>
 					<button
 						className="btn btn-primary btn-xs"
