@@ -307,14 +307,6 @@ const FlowEditorPage = ({ params }) => {
 	}, [id, nodes, updateProject])
 
 	const onDeploy = useCallback(async () => {
-		setStartingDeploy(true)
-		await onSave().catch(() => {
-			setStartingDeploy(false)
-		})
-		await onGenerateImage().catch(() => {
-			setStartingDeploy(false)
-		})
-
 		const formattedJSON = {
 			name: 'process',
 			attributes: {},
@@ -373,7 +365,6 @@ const FlowEditorPage = ({ params }) => {
 										{
 											name: 'next_task',
 											children: data.nextTasks.map((nextTask) => {
-												console.log({ nextTask })
 												return {
 													name: 'rule',
 													attributes: {
@@ -382,7 +373,10 @@ const FlowEditorPage = ({ params }) => {
 													children: [
 														{
 															name: 'next',
-															value: nextTask.next,
+															value: slugify(
+																nodes.find((node) => node.id === nextTask.next)
+																	.data?.name || nextTask.next
+															),
 														},
 													],
 												}
@@ -394,6 +388,7 @@ const FlowEditorPage = ({ params }) => {
 					}
 				}),
 		}
+		console.log({ formattedJSON })
 		await fetch('/api/projects/deploy', {
 			method: 'POST',
 			body: JSON.stringify(formattedJSON),
@@ -521,10 +516,14 @@ const FlowEditorPage = ({ params }) => {
 									</div>
 								</ControlButton>
 								<ControlButton
-									onClick={() => {
-										onDeploy()
+									onClick={async () => {
+										setStartingDeploy(true)
+										await onSave()
+										await onGenerateImage()
+										await onDeploy()
+										setStartingDeploy(false)
 									}}
-									disabled={true}
+									disabled={startingDeploy}
 								>
 									{startingDeploy ? (
 										<span className="loading loading-infinity loading-md "></span>
