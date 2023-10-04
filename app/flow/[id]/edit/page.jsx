@@ -14,9 +14,13 @@ import ReactFlow, {
 	Background,
 	useReactFlow,
 	ReactFlowProvider,
+	getRectOfNodes,
+	getTransformForBounds,
 } from 'reactflow'
 
 import ShortUniqueId from 'short-unique-id'
+import { toPng } from 'html-to-image'
+import b64toBlob from 'b64-to-blob'
 
 import 'reactflow/dist/style.css'
 
@@ -41,10 +45,10 @@ import {
 import {
 	useUpdateProjectMutation,
 	useGetProjectQuery,
-	useDeployProjectQuery,
 } from '../../../lib/redux/slices/projectSlice'
 import Loading from './components/loading'
 import slugify from 'slugify'
+import { set } from 'min-dash'
 
 //import { elementToSVG } from 'dom-to-svg'
 
@@ -137,26 +141,6 @@ const FlowEditorPage = ({ params }) => {
 				nextTasks,
 			},
 		})
-	}
-
-	const save = async (obj, prj) => {
-		const { id } = prj
-		const bytes = new TextEncoder().encode(JSON.stringify(obj))
-		const JSONBlob = new Blob([bytes], {
-			type: 'application/json;charset=utf-8',
-		})
-		return fetch(`/api/blob/${id}.json`, {
-			method: 'POST',
-			body: JSONBlob,
-		})
-			.then((res) => res.json())
-			.then((res) => res.url)
-			.then((jsonFile) => {
-				updateProject({
-					id,
-					jsonFile,
-				})
-			})
 	}
 
 	const onButtonDragStart = (event, nodeType) => {
@@ -255,121 +239,176 @@ const FlowEditorPage = ({ params }) => {
 
 	const onSave = useCallback(async () => {
 		if (rfInstance) {
-			setIsSaving(true)
 			const obj = rfInstance.toObject()
-			await save(obj, project)
-			setIsSaving(false)
-		}
-	}, [rfInstance, save, project])
-	const onDeploy = useCallback(async () => {
-		if (rfInstance) {
-			setStartingDeploy(true)
-			setDeployStatus('pending')
-			const obj = rfInstance.toObject()
-			await save(obj, project)
-				.then(() => {})
-				.catch(() => {
-					setStartingDeploy(false)
-					setDeployStatus('error')
+			const { id } = project
+			const bytes = new TextEncoder().encode(JSON.stringify(obj))
+			const JSONBlob = new Blob([bytes], {
+				type: 'application/json;charset=utf-8',
+			})
+			return fetch(`/api/blob/${id}.json`, {
+				method: 'POST',
+				body: JSONBlob,
+			})
+				.then((res) => res.json())
+				.then((res) => res.url)
+				.then((jsonFile) => {
+					updateProject({
+						id,
+						jsonFile,
+					})
 				})
-			const formattedJSON = {
-				name: 'process',
-				attributes: {},
-				value: '',
-				children: nodes
-					.filter((node) => node.type === 'lane')
-					.map((lane) => {
-						const { id, data } = lane
-						return {
-							name: 'lane',
-							attributes: {
-								id,
-								name: data.name,
-								canCreate: data.canWrite,
-								canRead: data.canRead,
-								canUpdate: data.canUpdate,
-								canDelete: data.canDelete,
-							},
-							children: nodes
-								.filter((node) => node.parentNode === id)
-								.map((node) => {
-									const { id, type, data } = node
-									if (type !== 'task') {
-										return {
-											name: type,
-											attributes: {
-												id,
-												name: data.name,
-											},
-										}
-									}
+		}
+	}, [rfInstance, project, updateProject])
+
+	const onGenerateImage = useCallback(() => {
+		const imageWidth = 1024
+		const imageHeight = 768
+		const nodeBounds = getRectOfNodes(nodes)
+		const { width, height } = nodeBounds
+		const transform = getTransformForBounds(
+			nodeBounds,
+			imageWidth,
+			imageHeight,
+			0.5,
+			2
+		)
+		toPng(document.querySelector('.react-flow__viewport'), {
+			backgroundColor: '#f9fafb',
+			width: imageWidth,
+			height: imageHeight,
+			style: {
+				width: imageWidth,
+				height: imageHeight,
+				transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+			},
+		}).then((b64) => {
+			const [datatype, datab64] = b64.split(';')
+			const data = datab64.split(',')[1]
+			const type = datatype.split(':')[1]
+			console.log({
+				type,
+				data,
+				b64,
+			})
+			const img = b64toBlob(data, type)
+			return fetch(`/api/blob/${id}.png`, {
+				method: 'POST',
+				body: img,
+			})
+				.then((res) => res.json())
+				.then((res) => res.url)
+				.then((thumbnail) => {
+					updateProject({
+						id,
+						thumbnail,
+					})
+				})
+		})
+	}, [id, nodes, updateProject])
+
+	const onDeploy = useCallback(async () => {
+		setStartingDeploy(true)
+		await onSave().catch(() => {
+			setStartingDeploy(false)
+		})
+		await onGenerateImage().catch(() => {
+			setStartingDeploy(false)
+		})
+
+		const formattedJSON = {
+			name: 'process',
+			attributes: {},
+			value: '',
+			children: nodes
+				.filter((node) => node.type === 'lane')
+				.map((lane) => {
+					const { id, data } = lane
+					return {
+						name: 'lane',
+						attributes: {
+							id,
+							name: data.name,
+							canCreate: data.canWrite,
+							canRead: data.canRead,
+							canUpdate: data.canUpdate,
+							canDelete: data.canDelete,
+						},
+						children: nodes
+							.filter((node) => node.parentNode === id)
+							.map((node) => {
+								const { id, type, data } = node
+								if (type !== 'task') {
 									return {
 										name: type,
 										attributes: {
 											id,
-											name: slugify(data.name),
-											type: data.taskType,
+											name: data.name,
 										},
-										children: [
-											{
-												name: 'task_description',
-												value: data.description,
-											},
-											{
-												name: 'task_front',
-												value: data.frontendDescription,
-											},
-											{
-												name: 'task_input',
-												value: data.taskInput,
-											},
-											{
-												name: 'task_output',
-												value: data.taskOutput,
-											},
-											{
-												name: 'next_task',
-												children: data.nextTasks.map((nextTask) => {
-													console.log({ nextTask })
-													return {
-														name: 'rule',
-														attributes: {
-															name: nextTask.name,
-														},
-														children: [
-															{
-																name: 'next',
-																value: nextTask.next,
-															},
-														],
-													}
-												}),
-											},
-										],
 									}
-								}),
-						}
-					}),
-			}
-			console.log({ formattedJSON })
-			const apiResponse = await fetch('/api/projects/deploy', {
-				method: 'POST',
-				body: JSON.stringify(formattedJSON),
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			})
-				.then((res) => res.json())
-				.catch((err) => {
-					console.error(err)
-					setStartingDeploy(false)
-					setDeployStatus('error')
-				})
-			// console.log({ apiResponse })
+								}
+								return {
+									name: type,
+									attributes: {
+										id,
+										name: slugify(data.name),
+										type: data.taskType,
+									},
+									children: [
+										{
+											name: 'task_description',
+											value: data.description,
+										},
+										{
+											name: 'task_front',
+											value: data.frontendDescription,
+										},
+										{
+											name: 'task_input',
+											value: data.taskInput,
+										},
+										{
+											name: 'task_output',
+											value: data.taskOutput,
+										},
+										{
+											name: 'next_task',
+											children: data.nextTasks.map((nextTask) => {
+												console.log({ nextTask })
+												return {
+													name: 'rule',
+													attributes: {
+														name: nextTask.name,
+													},
+													children: [
+														{
+															name: 'next',
+															value: nextTask.next,
+														},
+													],
+												}
+											}),
+										},
+									],
+								}
+							}),
+					}
+				}),
 		}
+		await fetch('/api/projects/deploy', {
+			method: 'POST',
+			body: JSON.stringify(formattedJSON),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then((res) => res.json())
+			.catch((err) => {
+				console.error(err)
+				setStartingDeploy(false)
+			})
+
 		setStartingDeploy(false)
-		setDeployStatus('')
-	}, [rfInstance, save, project, nodes])
+	}, [onSave, onGenerateImage, nodes])
 
 	const onNodesDelete = useCallback(
 		(deletedNodes) => {
@@ -483,10 +522,9 @@ const FlowEditorPage = ({ params }) => {
 								</ControlButton>
 								<ControlButton
 									onClick={() => {
-										console.log('deploying')
 										onDeploy()
 									}}
-									disabled={startingDeploy}
+									disabled={true}
 								>
 									{startingDeploy ? (
 										<span className="loading loading-infinity loading-md "></span>
@@ -495,8 +533,11 @@ const FlowEditorPage = ({ params }) => {
 									)}
 								</ControlButton>
 								<ControlButton
-									onClick={() => {
-										onSave()
+									onClick={async () => {
+										setIsSaving(true)
+										await onSave()
+										await onGenerateImage()
+										setIsSaving(false)
 									}}
 								>
 									{isSaving ? (
