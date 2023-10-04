@@ -1,6 +1,12 @@
 /* eslint-disable react/display-name */
 'use client'
-import React, { useState, useRef, useCallback } from 'react'
+import React, {
+	useState,
+	useRef,
+	useCallback,
+	Suspense,
+	useEffect,
+} from 'react'
 import ReactFlow, {
 	MiniMap,
 	Controls,
@@ -10,7 +16,10 @@ import ReactFlow, {
 	ReactFlowProvider,
 } from 'reactflow'
 
+import ShortUniqueId from 'short-unique-id'
+
 import 'reactflow/dist/style.css'
+
 import { nodeTypes } from './components/nodes'
 import {
 	edgeTypes,
@@ -23,41 +32,38 @@ import StartIcon from './components/icons/start.svg'
 import TaskIcon from './components/icons/task.svg'
 import EndIcon from './components/icons/end.svg'
 import LaneIcon from './components/icons/lane.svg'
-import { CloudArrowUpIcon } from '@heroicons/react/24/outline'
+import SaveIcon from './components/icons/save.svg'
+import {
+	CheckIcon,
+	CloudArrowUpIcon,
+	ExclamationCircleIcon,
+} from '@heroicons/react/24/outline'
 import {
 	useUpdateProjectMutation,
 	useGetProjectQuery,
+	useDeployProjectQuery,
 } from '../../../lib/redux/slices/projectSlice'
+import Loading from './components/loading'
 
 //import { elementToSVG } from 'dom-to-svg'
 
 const FlowEditorPage = ({ params }) => {
+	const uid = new ShortUniqueId({ length: 6 })
 	const { id } = params
-	const {
-		data: project,
-		isLoading: isGetProjectLoading,
-		isError: isGetProjectError,
-	} = useGetProjectQuery(id)
+	const [startingDeploy, setStartingDeploy] = useState(false)
+	const [isSaving, setIsSaving] = useState(false)
+	const [deployStatus, setDeployStatus] = useState('')
 
-	const [updateProject] = useUpdateProjectMutation()
-	let nId = 0
-	const getNewNode = (type, position) => {
-		const id = getNodeId()
-		return {
-			id,
-			type,
-			position,
-			data: { label: `${type} node`, id },
-		}
-	}
-	const getNodeId = () => `node_${++nId}`
-	const { getIntersectingNodes, getNodes } = useReactFlow()
+	// create a use effect that runs on start and adds a time out that is removed when component is destroyed
 	const {
 		isModalOpen,
 		closeModal,
 		modalComponent,
 		nodes,
+		getNode,
+		setNodes,
 		edges,
+		setEdges,
 		rfInstance,
 		onNodesChange,
 		onEdgesChange,
@@ -68,9 +74,38 @@ const FlowEditorPage = ({ params }) => {
 		updateEdge,
 		removeEdge,
 	} = useStore()
+	const {
+		data: project,
+		isLoading: isGetProjectLoading,
+		isError: isGetProjectError,
+	} = useGetProjectQuery(id)
 
+	const [updateProject] = useUpdateProjectMutation()
+
+	const { getIntersectingNodes, getNodes } = useReactFlow()
+
+	const getNewNode = (type, position) => {
+		const id = getNodeId()
+		return {
+			id,
+			type,
+			position,
+			data: { label: `${type} node`, id },
+			zIndex: type === 'lane' ? -1 : 0,
+		}
+	}
+	const getNodeId = () => `node_${uid.rnd()}`
 	const reactFlowWrapper = useRef(null)
 	const edgeUpdateSuccessful = useRef(true)
+
+	useEffect(() => {
+		if (!project) return
+		const { jsonFile } = project
+		if (!jsonFile) return
+		setNodes(jsonFile.nodes)
+		setEdges(jsonFile.edges)
+		console.log('done')
+	}, [project, setNodes, setEdges])
 
 	const addNextTask = (source, target) => {
 		const sourceNode = nodes.find((node) => node.id === source)
@@ -90,7 +125,7 @@ const FlowEditorPage = ({ params }) => {
 	}
 
 	const removeNextTask = (source, target) => {
-		const sourceNode = nodes.find((node) => node.id === source)
+		const sourceNode = getNode(source)
 		const { data } = sourceNode
 		const nextTasks = (data.nextTasks || []).filter(
 			(task) => task.next !== target
@@ -104,41 +139,25 @@ const FlowEditorPage = ({ params }) => {
 		})
 	}
 
-	const save = async (instance, prj) => {
+	const save = async (obj, prj) => {
 		const { id } = prj
-		const obj = instance.toObject()
 		const bytes = new TextEncoder().encode(JSON.stringify(obj))
 		const JSONBlob = new Blob([bytes], {
 			type: 'application/json;charset=utf-8',
 		})
-		const jsonFile = await fetch(`/api/blob/${id}.json`, {
+		return fetch(`/api/blob/${id}.json`, {
 			method: 'POST',
 			body: JSONBlob,
 		})
 			.then((res) => res.json())
 			.then((res) => res.url)
-			.catch((err) => console.error(err))
-		updateProject({
-			id,
-			jsonFile,
-		})
-
-		// const svgDocument = await elementToSVG(
-		// 	document.querySelector('.react-flow__pane')
-		// )
-		// const svgString = new XMLSerializer().serializeToString(svgDocument)
-		// const svgBlob = new Blob([svgString], {
-		// 	type: 'image/svg+xml;charset=utf-8',
-		// })
-		// const SVGFile = await fetch(`/api/blob/${id}.svg`, {
-		// 	method: 'POST',
-		// 	body: svgBlob,
-		// })
-		// 	.then((res) => res.json())
-		// 	.then((res) => res.url)
-		// 	.catch((err) => console.error(err))
-		// console.log(SVGFile)
-		return { jsonFile }
+			.then((jsonFile) => {
+				console.log({ id, jsonFile })
+				updateProject({
+					id,
+					jsonFile,
+				})
+			})
 	}
 
 	const onButtonDragStart = (event, nodeType) => {
@@ -184,10 +203,11 @@ const FlowEditorPage = ({ params }) => {
 	}, [])
 
 	const onNodeDragStop = useCallback((event, node) => {
+		if (!node) return
 		const { type, data, parentNode } = node
 		if (type === 'lane') return
 		const intersection = getIntersectingNodes(node).filter(
-			(n) => n.type === 'lane'
+			(n) => n?.type === 'lane'
 		)[0]
 
 		if (intersection?.id == parentNode) return
@@ -237,18 +257,162 @@ const FlowEditorPage = ({ params }) => {
 		console.log({ node })
 	}, [])
 
+	const onSave = useCallback(async () => {
+		if (rfInstance) {
+			setIsSaving(true)
+			const obj = rfInstance.toObject()
+			await save(obj, project)
+			setIsSaving(false)
+		}
+	}, [rfInstance, save, project])
 	const onDeploy = useCallback(async () => {
 		if (rfInstance) {
-			const { jsonFile } = await save(rfInstance, project)
-			console.log({ jsonFile })
-			// order nodes
-			// json to xml
-			// send to server
+			setStartingDeploy(true)
+			setDeployStatus('pending')
+			const obj = rfInstance.toObject()
+			await save(obj, project)
+				.then(() => {})
+				.catch(() => {
+					setStartingDeploy(false)
+					setDeployStatus('error')
+				})
+			const formattedJSON = {
+				name: 'process',
+				attributes: {},
+				value: '',
+				children: nodes
+					.filter((node) => node.type === 'lane')
+					.map((lane) => {
+						const { id, data } = lane
+						return {
+							name: 'lane',
+							attributes: {
+								id,
+								name: data.name,
+								canCreate: data.canWrite,
+								canRead: data.canRead,
+								canUpdate: data.canUpdate,
+								canDelete: data.canDelete,
+							},
+							children: nodes
+								.filter((node) => node.parentNode === id)
+								.map((node) => {
+									const { id, type, data } = node
+									if (type !== 'task') {
+										return {
+											name: type,
+											attributes: {
+												id,
+												name: data.name,
+											},
+										}
+									}
+									console.log({ node })
+									return {
+										name: type,
+										attributes: {
+											id,
+											name: data.name,
+											type: data.taskType,
+										},
+										children: [
+											{
+												name: 'task_description',
+												value: data.description,
+											},
+											{
+												name: 'task_front',
+												value: data.frontendDescription,
+											},
+											{
+												name: 'task_input',
+												value: data.taskInput,
+											},
+											{
+												name: 'task_output',
+												value: data.taskOutput,
+											},
+											{
+												name: 'next_task',
+												children: data.nextTasks.map((nextTask) => {
+													console.log({ nextTask })
+													return {
+														name: 'rule',
+														attributes: {
+															name: nextTask.name,
+														},
+														children: [
+															{
+																name: 'next',
+																value: nextTask.next,
+															},
+														],
+													}
+												}),
+											},
+										],
+									}
+								}),
+						}
+					}),
+			}
+			const apiResponse = await fetch('/api/projects/deploy', {
+				method: 'POST',
+				body: JSON.stringify(formattedJSON),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+				.then((res) => res.json())
+				.catch((err) => {
+					console.error(err)
+					setStartingDeploy(false)
+					setDeployStatus('error')
+				})
+			console.log({ apiResponse })
 		}
-	}, [rfInstance, project])
+		setStartingDeploy(false)
+		setDeployStatus('')
+	}, [rfInstance, save, project, nodes])
+
+	const onNodesDelete = useCallback(
+		(deletedNodes) => {
+			// is is lane remove as parent
+			for (const dn of deletedNodes) {
+				if (dn.type === 'lane') {
+					const children = nodes.filter((n) => n.parentNode === dn.id)
+					for (const child of children) {
+						updateNode({
+							...child,
+							parentNode: null,
+							position: {
+								x: child.positionAbsolute.x,
+								y: child.positionAbsolute.y,
+							},
+						})
+					}
+				}
+			}
+		},
+		[nodes, updateNode]
+	)
+
+	const GetSatusIcon = ({ status }) => {
+		switch (status) {
+			case 'success':
+				return <CheckIcon />
+			case 'error':
+				return <ExclamationCircleIcon />
+			default:
+				return (
+					<span className="loading loading-infinity loading-sm text-white"></span>
+				)
+		}
+	}
 
 	return (
 		<main className="h-screen bg-primary-content">
+			{isGetProjectLoading && <Loading />}
 			<div className="drawer drawer-end h-full">
 				<input
 					id="my-drawer-4"
@@ -277,6 +441,7 @@ const FlowEditorPage = ({ params }) => {
 							onDragOver={onDragOver}
 							onNodeDragStop={onNodeDragStop}
 							onNodeDoubleClick={onNodeDoubleClick}
+							onNodesDelete={onNodesDelete}
 							onEdgeUpdate={onEdgeUpdate}
 							onEdgeUpdateStart={onEdgeUpdateStart}
 							onEdgeUpdateEnd={onEdgeUpdateEnd}
@@ -325,14 +490,37 @@ const FlowEditorPage = ({ params }) => {
 										console.log('deploying')
 										onDeploy()
 									}}
+									disabled={startingDeploy}
 								>
-									<CloudArrowUpIcon />
+									{startingDeploy ? (
+										<span className="loading loading-infinity loading-md "></span>
+									) : (
+										<CloudArrowUpIcon />
+									)}
+								</ControlButton>
+								<ControlButton
+									onClick={() => {
+										onSave()
+									}}
+								>
+									{isSaving ? (
+										<span className="loading loading-infinity loading-md "></span>
+									) : (
+										<SaveIcon />
+									)}
 								</ControlButton>
 							</Controls>
 							<MiniMap className="hidden" />
 							<Background variant="dots" gap={12} size={1} />
 						</ReactFlow>
 					</div>
+					{startingDeploy && (
+						<div className="toast toast-end">
+							<div className={`alert  alert-info`}>
+								<GetSatusIcon status={deployStatus} />
+							</div>
+						</div>
+					)}
 				</div>
 				<div className="drawer-side pt-10">
 					<label

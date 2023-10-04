@@ -14,14 +14,14 @@ const LaneNode = memo(({ data, selected }) => {
 		<>
 			<NodeToolbar isVisible={data.toolbarVisible} position={'right'}>
 				<button
-					className="btn btn-square rounded-sm  btn-base-300 btn-xs ml-1"
+					className="btn btn-square rounded-sm border-2 border-solid border-neutral btn-base-300 btn-xs"
 					onClick={() => {
 						isModalOpen
 							? closeModal()
 							: openModal(<LanePropertiesModal data={data} />)
 					}}
 				>
-					<WrenchIcon className="w-6 h-6" />
+					<WrenchIcon className="w-5 h-5" />
 				</button>
 			</NodeToolbar>
 			<NodeResizer
@@ -32,7 +32,7 @@ const LaneNode = memo(({ data, selected }) => {
 				minHeight={250}
 			/>
 			<div className="h-full w-full">
-				<div className="bg-white relative bg-opacity-70 border border-black z-0 h-full w-full join join-vertical rounded-none">
+				<div className="bg-white relative bg-opacity-70 border border-black h-full w-full join join-vertical rounded-none">
 					<div className="join-item border border-black text-center min-h-10">
 						{data.role || '[new lane]'}
 					</div>
