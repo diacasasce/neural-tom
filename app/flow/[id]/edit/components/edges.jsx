@@ -48,7 +48,7 @@ export const EdgeOptions = {
 		stroke: 'black',
 	},
 	interactionWidth: 2,
-	type: 'floating',
+	type: 'smoothstep',
 	markerEnd: {
 		type: MarkerType.ArrowClosed,
 		color: '#000000',

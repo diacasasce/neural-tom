@@ -36,7 +36,7 @@ const ProjectCard = ({ project }) => {
 						className="btn btn-primary btn-xs"
 						disabled={status !== 'draft'}
 						onClick={() => {
-							router.push(`/bpmn/${id}/edit`)
+							router.push(`/flow/${id}/edit`)
 						}}
 					>
 						<PencilSquareIcon className="w-5 h-5" />

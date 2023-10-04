@@ -44,6 +44,7 @@ import {
 	useDeployProjectQuery,
 } from '../../../lib/redux/slices/projectSlice'
 import Loading from './components/loading'
+import slugify from 'slugify'
 
 //import { elementToSVG } from 'dom-to-svg'
 
@@ -104,7 +105,6 @@ const FlowEditorPage = ({ params }) => {
 		if (!jsonFile) return
 		setNodes(jsonFile.nodes)
 		setEdges(jsonFile.edges)
-		console.log('done')
 	}, [project, setNodes, setEdges])
 
 	const addNextTask = (source, target) => {
@@ -152,7 +152,6 @@ const FlowEditorPage = ({ params }) => {
 			.then((res) => res.json())
 			.then((res) => res.url)
 			.then((jsonFile) => {
-				console.log({ id, jsonFile })
 				updateProject({
 					id,
 					jsonFile,
@@ -167,7 +166,6 @@ const FlowEditorPage = ({ params }) => {
 
 	const onConnect = (connection) => {
 		const { source, target } = connection
-		console.log({ connection, source, target })
 		addNextTask(source, target)
 		// check if edge alredy exists
 		const edge = edges.find(
@@ -191,7 +189,6 @@ const FlowEditorPage = ({ params }) => {
 				y: event.clientY - reactFlowBounds.top,
 			})
 			const newNode = getNewNode(type, position)
-			console.log({ newNode })
 			addNode(newNode)
 		},
 		[rfInstance]
@@ -232,7 +229,6 @@ const FlowEditorPage = ({ params }) => {
 
 	const onEdgeUpdate = useCallback((oldEdge, newConnection) => {
 		edgeUpdateSuccessful.current = true
-		console.log(oldEdge, newConnection)
 		const edge = edges.find(
 			(edge) =>
 				edge.source === newConnection.source &&
@@ -307,12 +303,11 @@ const FlowEditorPage = ({ params }) => {
 											},
 										}
 									}
-									console.log({ node })
 									return {
 										name: type,
 										attributes: {
 											id,
-											name: data.name,
+											name: slugify(data.name),
 											type: data.taskType,
 										},
 										children: [
@@ -356,6 +351,7 @@ const FlowEditorPage = ({ params }) => {
 						}
 					}),
 			}
+			console.log({ formattedJSON })
 			const apiResponse = await fetch('/api/projects/deploy', {
 				method: 'POST',
 				body: JSON.stringify(formattedJSON),
@@ -369,7 +365,7 @@ const FlowEditorPage = ({ params }) => {
 					setStartingDeploy(false)
 					setDeployStatus('error')
 				})
-			console.log({ apiResponse })
+			// console.log({ apiResponse })
 		}
 		setStartingDeploy(false)
 		setDeployStatus('')
