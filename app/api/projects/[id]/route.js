@@ -9,6 +9,14 @@ export async function GET(request, { params }) {
 			id: splitId[0],
 		},
 	})
+	if (project?.jsonFile) {
+		const jsonFile = await fetch(project.jsonFile).then((res) => res.json())
+		return NextResponse.json({
+			...project,
+			jsonFile,
+			jsonURL: project.jsonFile,
+		})
+	}
 	if (splitId[1] === 'BPMN' && project.bpmnFile) {
 		const bpmnFile = await fetch(project.bpmnFile).then((res) => res.text())
 		return NextResponse.json({

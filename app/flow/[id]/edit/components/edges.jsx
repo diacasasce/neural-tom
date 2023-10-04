@@ -1,6 +1,11 @@
 /* eslint-disable react/display-name */
 import React, { useCallback } from 'react'
-import { useStore, getStraightPath, MarkerType } from 'reactflow'
+import {
+	useStore,
+	getStraightPath,
+	MarkerType,
+	getSmoothStepPath,
+} from 'reactflow'
 import { getEdgeParams } from './utils.js'
 
 export const ConnectionLine = ({
@@ -38,10 +43,15 @@ export const ConnectionLineStyle = {
 }
 
 export const EdgeOptions = {
-	style: { strokeWidth: 3 },
+	style: {
+		strokeWidth: 3,
+		stroke: 'black',
+	},
+	interactionWidth: 2,
 	type: 'floating',
 	markerEnd: {
 		type: MarkerType.ArrowClosed,
+		color: '#000000',
 	},
 }
 
@@ -59,7 +69,7 @@ export const FloatingEdge = ({ id, source, target, markerEnd, style }) => {
 
 	const { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode)
 
-	const [edgePath] = getStraightPath({
+	const [edgePath] = getSmoothStepPath({
 		sourceX: sx,
 		sourceY: sy,
 		targetX: tx,

@@ -71,6 +71,9 @@ module.exports = {
 					'.min-h-unset': {
 						minHeight: 'unset',
 					},
+					'.react-flow__node-lane': {
+						zIndex: '-1!important',
+					},
 				},
 			},
 		],

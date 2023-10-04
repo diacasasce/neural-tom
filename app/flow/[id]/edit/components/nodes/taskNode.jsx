@@ -16,7 +16,7 @@ const TaskNode = memo(({ data, selected }) => {
 		<>
 			<NodeToolbar isVisible={data.toolbarVisible} position={'right'}>
 				<button
-					className="btn btn-square rounded-sm  btn-base-300 btn-xs ml-1"
+					className="btn btn-square rounded-sm border-2 border-solid border-neutral btn-base-300 btn-xs"
 					onClick={() => {
 						isModalOpen ? closeModal() : openModal(<TaskModal data={data} />)
 					}}
@@ -244,7 +244,11 @@ const TaskModal = ({ data }) => {
 							data: {
 								...data,
 								name,
+								taskType,
 								description,
+								frontendDescription,
+								taskInput,
+								taskOutput,
 								testCases,
 								nextTasks,
 							},
