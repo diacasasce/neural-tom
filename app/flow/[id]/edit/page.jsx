@@ -365,6 +365,9 @@ const FlowEditorPage = ({ params }) => {
 										{
 											name: 'next_task',
 											children: data.nextTasks.map((nextTask) => {
+												const Nnode = nodes.find(
+													(node) => node.id === nextTask.next
+												)
 												return {
 													name: 'rule',
 													attributes: {
@@ -373,10 +376,7 @@ const FlowEditorPage = ({ params }) => {
 													children: [
 														{
 															name: 'next',
-															value: slugify(
-																nodes.find((node) => node.id === nextTask.next)
-																	.data?.name || nextTask.next
-															),
+															value: slugify(Nnode.data?.name || Nnode.type),
 														},
 													],
 												}
@@ -532,6 +532,7 @@ const FlowEditorPage = ({ params }) => {
 									)}
 								</ControlButton>
 								<ControlButton
+									className="w-10"
 									onClick={async () => {
 										setIsSaving(true)
 										await onSave()
