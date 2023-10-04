@@ -178,7 +178,7 @@ PaletteProvider.prototype.getPaletteEntries = function () {
 						console.log('trigger')
 						const body = decode(process)
 						console.log(body)
-						fetch('http://35.173.244.177:80/process_xml', {
+						fetch('https://54.211.64.120/process_xml', {
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/xml',
