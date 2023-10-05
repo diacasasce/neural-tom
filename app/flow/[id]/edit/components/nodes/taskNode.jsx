@@ -16,12 +16,12 @@ const TaskNode = memo(({ data, selected }) => {
 		<>
 			<NodeToolbar isVisible={data.toolbarVisible} position={'right'}>
 				<button
-					className="btn btn-square rounded-sm border-2 border-solid border-neutral btn-base-300 btn-xs"
+					className="btn btn-square rounded-md border-2 border-solid border-neutral bg-primary btn-base-300 btn-sm"
 					onClick={() => {
 						isModalOpen ? closeModal() : openModal(<TaskModal data={data} />)
 					}}
 				>
-					<WrenchIcon className="w-6 h-6" />
+					<WrenchIcon className="w-6 h-6 stroke-white" />
 				</button>
 			</NodeToolbar>
 			<div
