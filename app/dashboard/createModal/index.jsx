@@ -58,7 +58,7 @@ const CreateModal = ({ isOpen, onClose }) => {
 							setProjectDescription(event.target.value)
 						}}
 					></textarea>
-					<label className="label">
+					{/* <label className="label">
 						<span className="label-text text-primary-content">
 							Project Repository
 						</span>
@@ -71,7 +71,7 @@ const CreateModal = ({ isOpen, onClose }) => {
 						onChange={(event) => {
 							setProjectRepository(event.target.value)
 						}}
-					/>
+					/> */}
 				</div>
 				<div className="modal-action">
 					<form method="dialog" className="flex gap-2">
@@ -81,7 +81,7 @@ const CreateModal = ({ isOpen, onClose }) => {
 								event.preventDefault()
 								console.log('create', { event })
 								const newProject = await createNewProject()
-								router.push(`/bpmn/${newProject.id}/edit`)
+								router.push(`/flow/${newProject.id}/edit`)
 							}}
 						>
 							Create

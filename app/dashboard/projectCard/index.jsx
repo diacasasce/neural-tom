@@ -29,12 +29,11 @@ const ProjectCard = ({ project }) => {
 				<h3 className="card-title ">{name}</h3>
 				<p>{description}</p>
 				<div className="card-actions justify-end">
-					<button className="btn btn-primary btn-xs">
+					{/* <button className="btn btn-primary btn-xs">
 						<EyeIcon className="w-5 h-5" disabled />
-					</button>
+					</button> */}
 					<button
 						className="btn btn-primary btn-xs"
-						disabled={status !== 'draft'}
 						onClick={() => {
 							router.push(`/flow/${id}/edit`)
 						}}
@@ -46,6 +45,7 @@ const ProjectCard = ({ project }) => {
 						onClick={async () => {
 							await deleteProjectMutation(id)
 						}}
+						disabled={status !== 'draft'}
 					>
 						<TrashIcon className="w-5 h-5" />
 					</button>

@@ -482,8 +482,8 @@ const FlowEditorPage = ({ params }) => {
 							defaultEdgeOptions={EdgeOptions}
 							fitView
 						>
-							<Controls position="top-left">
-								<ControlButton className="cursor-grab active:cursor-grabbing">
+							<Controls position="top-left" style={{}}>
+								<ControlButton className="!cursor-grab active:cursor-grabbing btn">
 									<div
 										onDragStart={(event) => onButtonDragStart(event, 'start')}
 										draggable
@@ -491,7 +491,7 @@ const FlowEditorPage = ({ params }) => {
 										<StartIcon />
 									</div>
 								</ControlButton>
-								<ControlButton>
+								<ControlButton className="!cursor-grab active:cursor-grabbing">
 									<div
 										onDragStart={(event) => onButtonDragStart(event, 'task')}
 										draggable
@@ -499,7 +499,7 @@ const FlowEditorPage = ({ params }) => {
 										<TaskIcon />
 									</div>
 								</ControlButton>
-								<ControlButton>
+								<ControlButton className="!cursor-grab active:cursor-grabbing">
 									<div
 										onDragStart={(event) => onButtonDragStart(event, 'end')}
 										draggable
@@ -507,7 +507,7 @@ const FlowEditorPage = ({ params }) => {
 										<EndIcon />
 									</div>
 								</ControlButton>
-								<ControlButton>
+								<ControlButton className="!cursor-grab active:cursor-grabbing">
 									<div
 										onDragStart={(event) => onButtonDragStart(event, 'lane')}
 										draggable
@@ -524,6 +524,7 @@ const FlowEditorPage = ({ params }) => {
 										setStartingDeploy(false)
 									}}
 									disabled={startingDeploy}
+									className=""
 								>
 									{startingDeploy ? (
 										<span className="loading loading-infinity loading-md "></span>
@@ -532,7 +533,7 @@ const FlowEditorPage = ({ params }) => {
 									)}
 								</ControlButton>
 								<ControlButton
-									className="w-10"
+									className=""
 									onClick={async () => {
 										setIsSaving(true)
 										await onSave()
